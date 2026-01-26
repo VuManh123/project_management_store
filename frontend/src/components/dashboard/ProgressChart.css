@@ -1,0 +1,41 @@
+.progress-chart-card {
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  height: 100%;
+}
+
+.progress-chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.progress-item {
+  width: 100%;
+}
+
+.progress-item-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.progress-item-label {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.progress-item-value {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.progress-bar {
+  margin: 0;
+}
+
+.progress-bar .ant-progress-bg {
+  border-radius: 4px;
+}

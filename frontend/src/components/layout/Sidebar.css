@@ -1,0 +1,156 @@
+.sidebar {
+  background: var(--sidebar-bg);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 100;
+}
+
+.sidebar-header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 64px;
+}
+
+.sidebar-logo {
+  color: var(--sidebar-text);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sidebar-logo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.sidebar-toggle {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-menu {
+  background: transparent;
+  border: none;
+  padding: 16px 8px;
+  height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.sidebar-menu .ant-menu-item {
+  margin: 8px 0;
+  border-radius: 8px;
+  height: 48px;
+  line-height: 48px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+}
+
+.sidebar-menu .ant-menu-item:hover {
+  background: var(--sidebar-hover);
+  color: var(--sidebar-text);
+}
+
+.sidebar-menu .ant-menu-item-selected {
+  background: var(--primary-color);
+  color: white;
+}
+
+.sidebar-menu .ant-menu-item-selected::after {
+  display: none;
+}
+
+.sidebar-menu .ant-menu-item-icon {
+  font-size: 18px;
+}
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-footer-menu {
+  background: transparent;
+  border: none;
+}
+
+.sidebar-footer-menu .ant-menu-item {
+  margin: 4px 8px;
+  border-radius: 8px;
+  height: 40px;
+  line-height: 40px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.sidebar-footer-menu .ant-menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.sidebar-footer-menu .ant-menu-item-danger {
+  color: rgba(239, 68, 68, 0.7);
+}
+
+.sidebar-footer-menu .ant-menu-item-danger:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--error-color);
+}
+
+/* Scrollbar styling for sidebar */
+.sidebar-menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 992px) {
+  .sidebar-responsive {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
+    height: 100vh;
+  }
+}

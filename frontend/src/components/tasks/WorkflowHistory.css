@@ -1,0 +1,17 @@
+.workflow-history {
+  padding: 16px;
+}
+
+.workflow-history-item {
+  margin-bottom: 8px;
+}
+
+.workflow-history-header {
+  margin-bottom: 4px;
+}
+
+.workflow-history-time {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-left: 32px;
+}

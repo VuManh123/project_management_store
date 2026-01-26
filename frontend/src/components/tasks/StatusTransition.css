@@ -1,0 +1,11 @@
+.status-transition {
+  padding: 16px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.status-transition-info {
+  margin-top: 8px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+}

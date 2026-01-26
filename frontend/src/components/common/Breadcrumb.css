@@ -1,0 +1,16 @@
+.breadcrumb-container {
+  margin-bottom: 16px;
+}
+
+.breadcrumb-container .ant-breadcrumb {
+  font-size: 14px;
+}
+
+.breadcrumb-container .ant-breadcrumb a {
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-container .ant-breadcrumb a:hover {
+  color: var(--primary-color);
+}

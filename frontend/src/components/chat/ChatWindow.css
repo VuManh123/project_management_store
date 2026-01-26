@@ -1,0 +1,27 @@
+.chat-window {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-window-card {
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  height: 100%;
+}
+
+.chat-window-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 600px;
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .chat-window-card .ant-card-body {
+    height: 500px !important;
+  }
+}

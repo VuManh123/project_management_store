@@ -1,0 +1,34 @@
+.task-detail-container {
+  width: 100%;
+}
+
+.task-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.task-detail-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.task-detail-actions,
+.task-detail-history {
+  margin-top: 24px;
+}
+
+.task-detail-actions h3,
+.task-detail-history h3 {
+  margin-bottom: 16px;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .task-detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

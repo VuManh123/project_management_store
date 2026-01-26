@@ -1,0 +1,36 @@
+.task-list-container {
+  width: 100%;
+}
+
+.task-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.task-list-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.task-list-filters {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .task-list-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .task-list-title {
+    font-size: 1.5rem;
+  }
+}

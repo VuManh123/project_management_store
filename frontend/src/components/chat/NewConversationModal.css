@@ -1,0 +1,64 @@
+.new-conversation-modal {
+  max-height: 500px;
+}
+
+.selected-users {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+.selected-users-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.selected-users-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.selected-user-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.users-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.user-item {
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.user-item:hover {
+  background-color: var(--bg-secondary);
+}
+
+.user-item.selected {
+  background-color: rgba(30, 64, 175, 0.1);
+  border: 1px solid var(--primary-color);
+}
+
+.users-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.users-list::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
+}

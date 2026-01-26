@@ -1,0 +1,16 @@
+.message-input {
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+  border-top: 1px solid var(--border-color);
+  background: white;
+}
+
+.message-input-textarea {
+  flex: 1;
+  resize: none;
+}
+
+.message-input-send {
+  align-self: flex-end;
+}

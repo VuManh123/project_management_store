@@ -2,7 +2,9 @@ require("express-router-group");
 const express = require("express");
 const middlewares = require("kernels/middlewares");
 const { validate } = require("kernels/validations");
+const authenticated = require("kernels/middlewares/authenticated");
 const exampleController = require("modules/examples/controllers/exampleController");
+const authController = require("modules/auth/controllers/authController");
 const router = express.Router({ mergeParams: true });
 
 // ===== EXAMPLE Request, make this commented =====
@@ -13,6 +15,20 @@ const router = express.Router({ mergeParams: true });
 // }
 // );
 
+// Auth routes (no authentication required)
+router.group("/auth", validate([]), (router) => {
+  router.post("/login", authController.login);
+  router.post("/register", authController.register);
+  router.post("/logout", authController.logout);
+  router.post("/refresh", authController.refreshToken);
+});
+
+// Protected auth routes
+router.group("/auth", middlewares([authenticated]), (router) => {
+  router.get("/profile", authController.getProfile);
+});
+
+// Example routes
 router.group("/example", validate([]), (router) => {
   router.get('/', exampleController.exampleRequest)
 })

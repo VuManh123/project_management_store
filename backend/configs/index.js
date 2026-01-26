@@ -10,4 +10,4 @@ const config = {
     hashing
 }
 
-module.exports.config = config
+module.exports = { config }

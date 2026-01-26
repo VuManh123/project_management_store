@@ -1,0 +1,17 @@
+.review-task-container {
+  width: 100%;
+  max-width: 800px;
+}
+
+.review-task-reports {
+  margin: 24px 0;
+}
+
+.review-task-reports h3 {
+  margin-bottom: 16px;
+}
+
+.review-task-actions {
+  text-align: center;
+  padding: 24px 0;
+}
