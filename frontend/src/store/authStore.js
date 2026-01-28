@@ -13,27 +13,34 @@ const useAuthStore = create((set, get) => ({
         set({ isLoading: true, error: null });
         try {
           const response = await authAPI.login(credentials);
-          const { user, token, refreshToken } = response.data;
+          // Backend returns { success, data: { user, token, refreshToken } }
+          const data = response.data?.data || response.data;
+          const { user, token, refreshToken } = data;
           
-          localStorage.setItem('token', token);
-          if (refreshToken) {
-            localStorage.setItem('refreshToken', refreshToken);
-          }
+          if (token) {
+            localStorage.setItem('token', token);
+            if (refreshToken) {
+              localStorage.setItem('refreshToken', refreshToken);
+            }
 
-          set({
-            user,
-            token,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null,
-          });
-          return { success: true };
+            set({
+              user,
+              token,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            });
+            return { success: true };
+          } else {
+            throw new Error('Invalid response format');
+          }
         } catch (error) {
+          const errorMessage = error.response?.data?.message || error.response?.data?.data?.message || error.message || 'Login failed';
           set({
             isLoading: false,
-            error: error.response?.data?.message || 'Login failed',
+            error: errorMessage,
           });
-          return { success: false, error: error.response?.data?.message || 'Login failed' };
+          return { success: false, error: errorMessage };
         }
       },
 
@@ -42,27 +49,49 @@ const useAuthStore = create((set, get) => ({
         set({ isLoading: true, error: null });
         try {
           const response = await authAPI.register(userData);
-          const { user, token, refreshToken } = response.data;
+          // Backend returns { success, data: { user, token, refreshToken } }
+          const data = response.data?.data || response.data;
+          const { user, token, refreshToken } = data;
           
-          localStorage.setItem('token', token);
-          if (refreshToken) {
-            localStorage.setItem('refreshToken', refreshToken);
-          }
+          if (token) {
+            localStorage.setItem('token', token);
+            if (refreshToken) {
+              localStorage.setItem('refreshToken', refreshToken);
+            }
 
-          set({
-            user,
-            token,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null,
-          });
-          return { success: true };
+            set({
+              user,
+              token,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            });
+            return { success: true };
+          } else {
+            throw new Error('Invalid response format');
+          }
         } catch (error) {
+          // Handle validation errors (422)
+          let errorMessage = 'Registration failed';
+          if (error.response?.status === 422) {
+            // Validation errors
+            const errors = error.response?.data?.data;
+            if (errors?.errors && Array.isArray(errors.errors)) {
+              errorMessage = errors.errors.map(e => e.message || e.msg).join(', ');
+            } else if (errors?.email) {
+              errorMessage = errors.email;
+            } else {
+              errorMessage = error.response?.data?.message || 'Validation failed';
+            }
+          } else {
+            errorMessage = error.response?.data?.message || error.message || 'Registration failed';
+          }
+          
           set({
             isLoading: false,
-            error: error.response?.data?.message || 'Registration failed',
+            error: errorMessage,
           });
-          return { success: false, error: error.response?.data?.message || 'Registration failed' };
+          return { success: false, error: errorMessage };
         }
       },
 
@@ -89,8 +118,10 @@ const useAuthStore = create((set, get) => ({
         set({ isLoading: true });
         try {
           const response = await authAPI.getProfile();
+          // Backend returns { success, data: { user } }
+          const user = response.data?.data || response.data;
           set({
-            user: response.data,
+            user,
             isLoading: false,
           });
         } catch (error) {
@@ -98,6 +129,39 @@ const useAuthStore = create((set, get) => ({
             isLoading: false,
             error: error.response?.data?.message || 'Failed to get profile',
           });
+        }
+      },
+
+      // Refresh token
+      refreshToken: async () => {
+        try {
+          const refreshToken = localStorage.getItem('refreshToken');
+          if (!refreshToken) {
+            throw new Error('No refresh token available');
+          }
+          
+          const response = await authAPI.refreshToken(refreshToken);
+          // Backend returns { success, data: { token } }
+          const data = response.data?.data || response.data;
+          const { token } = data;
+          
+          if (token) {
+            localStorage.setItem('token', token);
+            set({ token });
+            return { success: true, token };
+          } else {
+            throw new Error('Invalid response format');
+          }
+        } catch (error) {
+          // Refresh failed, clear tokens
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+          });
+          return { success: false, error: error.response?.data?.message || 'Token refresh failed' };
         }
       },
 

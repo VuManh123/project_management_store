@@ -43,10 +43,13 @@ api.interceptors.response.use(
           const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
             refreshToken,
           });
-          const { token } = response.data;
-          localStorage.setItem('token', token);
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          return api(originalRequest);
+          // Backend returns { success, data: { token } }
+          const { token } = response.data?.data || response.data;
+          if (token) {
+            localStorage.setItem('token', token);
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          }
         } catch (refreshError) {
           // Refresh failed, logout user
           localStorage.removeItem('token');
@@ -70,6 +73,7 @@ export const authAPI = {
   login: (credentials) => api.post('/auth/login', credentials),
   register: (userData) => api.post('/auth/register', userData),
   logout: () => api.post('/auth/logout'),
+  refreshToken: (refreshToken) => api.post('/auth/refresh', { refreshToken }),
   getProfile: () => api.get('/auth/profile'),
 };
 
