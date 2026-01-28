@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Form, Input, Button, Divider, App } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import AuthLayout from '../../layouts/AuthLayout';
 import useAuthStore from '../../store/authStore';
 import './Auth.css';
@@ -13,10 +14,11 @@ const Register = () => {
   const navigate = useNavigate();
   const register = useAuthStore((state) => state.register);
   const { message } = App.useApp();
+  const { t } = useTranslation();
 
   const onFinish = async (values) => {
     if (values.password !== values.confirmPassword) {
-      message.error('Passwords do not match!');
+      message.error(t('auth.passwordsDoNotMatch'));
       return;
     }
 
@@ -26,10 +28,10 @@ const Register = () => {
     setLoading(false);
 
     if (result.success) {
-      message.success('Registration successful!');
+      message.success(t('auth.registrationSuccessful'));
       navigate('/dashboard');
     } else {
-      message.error(result.error || 'Registration failed');
+      message.error(result.error || t('auth.registrationFailed'));
     }
   };
 
@@ -56,10 +58,10 @@ const Register = () => {
         animate="visible"
       >
         <motion.h2 variants={itemVariants} className="auth-title">
-          Create Account
+          {t('auth.createAccount')}
         </motion.h2>
         <motion.p variants={itemVariants} className="auth-subtitle">
-          Sign up to get started
+          {t('auth.signUpToGetStarted')}
         </motion.p>
 
         <Form
@@ -73,11 +75,11 @@ const Register = () => {
           <motion.div variants={itemVariants}>
             <Form.Item
               name="name"
-              rules={[{ required: true, message: 'Please input your name!' }]}
+              rules={[{ required: true, message: t('auth.pleaseInputName') }]}
             >
               <Input
                 prefix={<UserOutlined />}
-                placeholder="Full Name"
+                placeholder={t('common.fullName')}
                 className="auth-input"
               />
             </Form.Item>
@@ -87,13 +89,13 @@ const Register = () => {
             <Form.Item
               name="email"
               rules={[
-                { required: true, message: 'Please input your email!' },
-                { type: 'email', message: 'Please enter a valid email!' },
+                { required: true, message: t('auth.pleaseInputEmail') },
+                { type: 'email', message: t('auth.pleaseInputValidEmail') },
               ]}
             >
               <Input
                 prefix={<MailOutlined />}
-                placeholder="Email"
+                placeholder={t('common.email')}
                 className="auth-input"
               />
             </Form.Item>
@@ -103,13 +105,13 @@ const Register = () => {
             <Form.Item
               name="password"
               rules={[
-                { required: true, message: 'Please input your password!' },
-                { min: 6, message: 'Password must be at least 6 characters!' },
+                { required: true, message: t('auth.pleaseInputPassword') },
+                { min: 6, message: t('auth.passwordMinLength') },
               ]}
             >
               <Input.Password
                 prefix={<LockOutlined />}
-                placeholder="Password"
+                placeholder={t('common.password')}
                 className="auth-input"
               />
             </Form.Item>
@@ -120,20 +122,20 @@ const Register = () => {
               name="confirmPassword"
               dependencies={['password']}
               rules={[
-                { required: true, message: 'Please confirm your password!' },
+                { required: true, message: t('auth.pleaseConfirmPassword') },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
                     if (!value || getFieldValue('password') === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject(new Error('Passwords do not match!'));
+                    return Promise.reject(new Error(t('auth.passwordsDoNotMatch')));
                   },
                 }),
               ]}
             >
               <Input.Password
                 prefix={<LockOutlined />}
-                placeholder="Confirm Password"
+                placeholder={t('common.confirmPassword')}
                 className="auth-input"
               />
             </Form.Item>
@@ -148,18 +150,18 @@ const Register = () => {
                 block
                 className="auth-button"
               >
-                Sign Up
+                {t('common.signUp')}
               </Button>
             </Form.Item>
           </motion.div>
         </Form>
 
         <motion.div variants={itemVariants}>
-          <Divider>or</Divider>
+          <Divider>{t('common.or')}</Divider>
           <div className="auth-footer">
-            <span>Already have an account?</span>
+            <span>{t('common.alreadyHaveAccount')}</span>
             <Link to="/login" className="auth-link">
-              Sign in
+              {t('common.signIn')}
             </Link>
           </div>
         </motion.div>

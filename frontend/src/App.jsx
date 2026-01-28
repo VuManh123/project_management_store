@@ -1,9 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ConfigProvider, App as AntdApp } from 'antd';
 import { AnimatePresence } from 'framer-motion';
+import enUS from 'antd/locale/en_US';
+import viVN from 'antd/locale/vi_VN';
+import { useTranslation } from 'react-i18next';
 import MainLayout from './components/layout/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
+import LandingPage from './pages/landing/LandingPage';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Dashboard from './pages/dashboard/Dashboard';
@@ -16,6 +20,7 @@ import ReviewTask from './pages/tasks/ReviewTask';
 import Chat from './pages/chat/Chat';
 import NotFound from './pages/NotFound';
 import useAuthStore from './store/authStore';
+import useLanguageStore from './store/languageStore';
 import { useAuth } from './hooks/useAuth';
 import './App.css';
 
@@ -24,7 +29,7 @@ const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
   
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
   
   return children;
@@ -41,15 +46,35 @@ const PublicRoute = ({ children }) => {
   return children;
 };
 
+// Landing Route Component (show landing page if not authenticated, redirect if authenticated)
+const LandingRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return children;
+};
+
 function App() {
   const initAuth = useAuthStore((state) => state.initAuth);
+  const { language } = useLanguageStore();
+  const { i18n } = useTranslation();
+  const [antdLocale, setAntdLocale] = useState(enUS);
 
   useEffect(() => {
     initAuth();
   }, [initAuth]);
 
+  useEffect(() => {
+    // Update Ant Design locale based on i18n language
+    setAntdLocale(i18n.language === 'vi' ? viVN : enUS);
+  }, [i18n.language, language]);
+
   return (
     <ConfigProvider
+      locale={antdLocale}
       theme={{
         token: {
           colorPrimary: '#1E40AF',
@@ -62,6 +87,16 @@ function App() {
         <Router>
           <AnimatePresence mode="wait">
             <Routes>
+              {/* Landing Page - Public */}
+              <Route
+                path="/"
+                element={
+                  <LandingRoute>
+                    <LandingPage />
+                  </LandingRoute>
+                }
+              />
+
               {/* Public Routes */}
               <Route
                 path="/login"
@@ -82,23 +117,49 @@ function App() {
 
               {/* Protected Routes */}
               <Route
-                path="/"
+                path="/dashboard"
                 element={
                   <ProtectedRoute>
                     <MainLayout />
                   </ProtectedRoute>
                 }
               >
-                <Route index element={<Navigate to="/dashboard" replace />} />
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="projects" element={<ProjectList />} />
-                <Route path="projects/:id" element={<ProjectDetail />} />
-                <Route path="projects/:projectId/tasks" element={<TaskList />} />
-                <Route path="projects/:projectId/tasks/:taskId" element={<TaskDetail />} />
-                <Route path="projects/:projectId/tasks/:taskId/submit" element={<SubmitReport />} />
-                <Route path="projects/:projectId/tasks/:taskId/review" element={<ReviewTask />} />
-                <Route path="tasks" element={<TaskList />} />
-                <Route path="chat" element={<Chat />} />
+                <Route index element={<Dashboard />} />
+              </Route>
+              <Route
+                path="/projects"
+                element={
+                  <ProtectedRoute>
+                    <MainLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<ProjectList />} />
+                <Route path=":id" element={<ProjectDetail />} />
+                <Route path=":projectId/tasks" element={<TaskList />} />
+                <Route path=":projectId/tasks/:taskId" element={<TaskDetail />} />
+                <Route path=":projectId/tasks/:taskId/submit" element={<SubmitReport />} />
+                <Route path=":projectId/tasks/:taskId/review" element={<ReviewTask />} />
+              </Route>
+              <Route
+                path="/tasks"
+                element={
+                  <ProtectedRoute>
+                    <MainLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<TaskList />} />
+              </Route>
+              <Route
+                path="/chat"
+                element={
+                  <ProtectedRoute>
+                    <MainLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<Chat />} />
               </Route>
 
               {/* 404 */}

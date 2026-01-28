@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Form, Input, Button, Divider, App } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import AuthLayout from '../../layouts/AuthLayout';
 import useAuthStore from '../../store/authStore';
 import './Auth.css';
@@ -13,6 +14,7 @@ const Login = () => {
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
   const { message } = App.useApp();
+  const { t } = useTranslation();
 
   const onFinish = async (values) => {
     setLoading(true);
@@ -20,10 +22,10 @@ const Login = () => {
     setLoading(false);
 
     if (result.success) {
-      message.success('Login successful!');
+      message.success(t('auth.loginSuccessful'));
       navigate('/dashboard');
     } else {
-      message.error(result.error || 'Login failed');
+      message.error(result.error || t('auth.loginFailed'));
     }
   };
 
@@ -50,10 +52,10 @@ const Login = () => {
         animate="visible"
       >
         <motion.h2 variants={itemVariants} className="auth-title">
-          Welcome Back
+          {t('common.welcomeBack')}
         </motion.h2>
         <motion.p variants={itemVariants} className="auth-subtitle">
-          Sign in to continue to your account
+          {t('common.signInToContinue')}
         </motion.p>
 
         <Form
@@ -68,13 +70,13 @@ const Login = () => {
             <Form.Item
               name="email"
               rules={[
-                { required: true, message: 'Please input your email!' },
-                { type: 'email', message: 'Please enter a valid email!' },
+                { required: true, message: t('auth.pleaseInputEmail') },
+                { type: 'email', message: t('auth.pleaseInputValidEmail') },
               ]}
             >
               <Input
                 prefix={<MailOutlined />}
-                placeholder="Email"
+                placeholder={t('common.email')}
                 className="auth-input"
               />
             </Form.Item>
@@ -83,11 +85,11 @@ const Login = () => {
           <motion.div variants={itemVariants}>
             <Form.Item
               name="password"
-              rules={[{ required: true, message: 'Please input your password!' }]}
+              rules={[{ required: true, message: t('auth.pleaseInputPassword') }]}
             >
               <Input.Password
                 prefix={<LockOutlined />}
-                placeholder="Password"
+                placeholder={t('common.password')}
                 className="auth-input"
               />
             </Form.Item>
@@ -102,18 +104,18 @@ const Login = () => {
                 block
                 className="auth-button"
               >
-                Sign In
+                {t('common.signIn')}
               </Button>
             </Form.Item>
           </motion.div>
         </Form>
 
         <motion.div variants={itemVariants}>
-          <Divider>or</Divider>
+          <Divider>{t('common.or')}</Divider>
           <div className="auth-footer">
-            <span>Don't have an account?</span>
+            <span>{t('common.dontHaveAccount')}</span>
             <Link to="/register" className="auth-link">
-              Sign up
+              {t('common.signUp')}
             </Link>
           </div>
         </motion.div>

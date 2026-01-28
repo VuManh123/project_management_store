@@ -1,0 +1,169 @@
+{
+  "landing": {
+    "hero": {
+      "title": "Professional Project Management",
+      "subtitle": "A comprehensive project management platform that helps you and your team work more efficiently. Manage tasks, track progress, and collaborate in real-time.",
+      "ctaLogin": "Sign In",
+      "ctaRegister": "Get Started",
+      "slide1": {
+        "title": "Smart Project Management with MC One",
+        "subtitle": "A modern project management platform that helps your team work more efficiently. Automate workflows, track progress in real-time and collaborate without limits."
+      },
+      "slide2": {
+        "title": "Powerful Team Collaboration",
+        "subtitle": "Work effectively with integrated chat tools, clear permissions and easy member management. All in one platform."
+      },
+      "slide3": {
+        "title": "Visual Progress Tracking",
+        "subtitle": "Flexible Kanban board, detailed analytics dashboard and automatic reports. Always stay on top of your project status."
+      }
+    },
+    "features": {
+      "title": "Key Features",
+      "subtitle": "All the tools you need to manage projects successfully",
+      "items": {
+        "projectManagement": {
+          "title": "Project Management",
+          "description": "Create and manage multiple projects simultaneously with an intuitive and easy-to-use interface"
+        },
+        "taskTracking": {
+          "title": "Task Tracking",
+          "description": "Flexible Kanban board helps you track work progress visually"
+        },
+        "teamCollaboration": {
+          "title": "Team Collaboration",
+          "description": "Work effectively with clear permissions and easy member management"
+        },
+        "realtimeChat": {
+          "title": "Real-time Chat",
+          "description": "Communicate instantly with your team through integrated chat, supporting project and task-based conversations"
+        }
+      }
+    },
+    "benefits": {
+      "title": "Why Choose Us?",
+      "subtitle": "A platform designed to help you work better",
+      "items": {
+        "efficiency": {
+          "title": "Increase Efficiency",
+          "description": "Automate workflows and reduce management time"
+        },
+        "visibility": {
+          "title": "Transparency",
+          "description": "Track project and task progress clearly and transparently"
+        },
+        "scalability": {
+          "title": "Easy to Scale",
+          "description": "Suitable for small teams to large enterprises"
+        },
+        "support": {
+          "title": "24/7 Support",
+          "description": "Our support team is always ready to help you"
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "subtitle": "Join thousands of teams already using our platform",
+      "button": "Create Free Account"
+    },
+    "footer": {
+      "product": "Product",
+      "company": "Company",
+      "resources": "Resources",
+      "legal": "Legal",
+      "links": {
+        "features": "Features",
+        "pricing": "Pricing",
+        "about": "About Us",
+        "contact": "Contact",
+        "blog": "Blog",
+        "documentation": "Documentation",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service"
+      },
+      "copyright": "© 2024 MC One. All rights reserved."
+    },
+    "testimonials": {
+      "title": "What Our Customers Say",
+      "subtitle": "Thousands of companies trust and use MC One to manage their projects",
+      "item1": {
+        "company": "TechCorp Vietnam",
+        "name": "John Smith",
+        "role": "Project Director",
+        "content": "MC One has transformed how we manage projects. Intuitive interface, powerful features and excellent support. We've increased productivity by 40%!"
+      },
+      "item2": {
+        "company": "StartupHub",
+        "name": "Sarah Johnson",
+        "role": "CEO",
+        "content": "The best platform we've ever used. Especially the real-time chat and Kanban board features help our team work very efficiently."
+      },
+      "item3": {
+        "company": "Digital Solutions",
+        "name": "Michael Chen",
+        "role": "CTO",
+        "content": "MC One is not just a project management tool, but a comprehensive solution for teams. We are very satisfied with this service."
+      }
+    },
+    "about": {
+      "title": "About MC One",
+      "subtitle": "Leading project management platform trusted by thousands of teams and businesses",
+      "mission": {
+        "title": "Our Mission",
+        "content": "MC One was created with the mission to help teams and businesses manage projects more efficiently. We believe that good technology helps people work smarter, not harder."
+      },
+      "vision": {
+        "title": "Our Vision",
+        "content": "To become the most trusted project management platform in Vietnam and the region. We aim to create a complete and easy-to-use project management tool ecosystem."
+      },
+      "stats": {
+        "users": "10K+",
+        "usersLabel": "Users",
+        "projects": "50K+",
+        "projectsLabel": "Projects",
+        "companies": "500+",
+        "companiesLabel": "Companies",
+        "countries": "15+",
+        "countriesLabel": "Countries"
+      }
+    }
+  },
+  "common": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "language": "Language",
+    "english": "English",
+    "vietnamese": "Vietnamese",
+    "welcome": "Welcome",
+    "welcomeBack": "Welcome Back",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signInToContinue": "Sign in to continue to your account",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "confirmPassword": "Confirm Password",
+    "fullName": "Full Name",
+    "or": "or"
+  },
+  "auth": {
+    "createAccount": "Create Account",
+    "signUpToGetStarted": "Sign up to get started",
+    "loginSuccessful": "Login successful!",
+    "loginFailed": "Login failed",
+    "registrationSuccessful": "Registration successful!",
+    "registrationFailed": "Registration failed",
+    "passwordsDoNotMatch": "Passwords do not match!",
+    "pleaseInputEmail": "Please input your email!",
+    "pleaseInputValidEmail": "Please enter a valid email!",
+    "pleaseInputPassword": "Please input your password!",
+    "pleaseInputName": "Please input your name!",
+    "pleaseConfirmPassword": "Please confirm your password!",
+    "passwordMinLength": "Password must be at least 6 characters!"
+  }
+}
+

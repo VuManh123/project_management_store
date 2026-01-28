@@ -7,6 +7,15 @@ const exampleController = require("modules/examples/controllers/exampleControlle
 const authController = require("modules/auth/controllers/authController");
 const router = express.Router({ mergeParams: true });
 
+// Health check endpoint (for Docker health checks)
+router.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
+});
+
 // ===== EXAMPLE Request, make this commented =====
 // router.group("/posts",middlewares([authenticated, role("owner")]),(router) => {
 //   router.post("/create",validate([createPostRequest]),postsController.create);

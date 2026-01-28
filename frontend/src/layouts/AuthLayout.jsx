@@ -61,7 +61,10 @@ const AuthLayout = ({ children }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
-          <h1 className="auth-logo">Project Manager</h1>
+          <div className="auth-logo-container">
+            <img src="/logo-mco.png" alt="MC One" className="auth-logo-image" />
+            <h1 className="auth-logo">MC One</h1>
+          </div>
           <p className="auth-tagline">Manage your projects with ease</p>
         </motion.div>
 

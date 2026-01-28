@@ -1,0 +1,169 @@
+{
+  "landing": {
+    "hero": {
+      "title": "Quản Lý Dự Án Chuyên Nghiệp",
+      "subtitle": "Nền tảng quản lý dự án toàn diện giúp bạn và team làm việc hiệu quả hơn. Quản lý tasks, theo dõi tiến độ, và cộng tác trong thời gian thực.",
+      "ctaLogin": "Đăng Nhập",
+      "ctaRegister": "Đăng Ký Ngay",
+      "slide1": {
+        "title": "Quản Lý Dự Án Thông Minh với MC One",
+        "subtitle": "Nền tảng quản lý dự án hiện đại giúp team của bạn làm việc hiệu quả hơn. Tự động hóa quy trình, theo dõi tiến độ real-time và cộng tác không giới hạn."
+      },
+      "slide2": {
+        "title": "Cộng Tác Team Mạnh Mẽ",
+        "subtitle": "Làm việc nhóm hiệu quả với công cụ chat tích hợp, phân quyền rõ ràng và quản lý thành viên dễ dàng. Tất cả trong một nền tảng duy nhất."
+      },
+      "slide3": {
+        "title": "Theo Dõi Tiến Độ Trực Quan",
+        "subtitle": "Kanban board linh hoạt, dashboard phân tích chi tiết và báo cáo tự động. Luôn nắm bắt được tình hình dự án của bạn."
+      }
+    },
+    "features": {
+      "title": "Tính Năng Nổi Bật",
+      "subtitle": "Tất cả công cụ bạn cần để quản lý dự án thành công",
+      "items": {
+        "projectManagement": {
+          "title": "Quản Lý Dự Án",
+          "description": "Tạo và quản lý nhiều dự án cùng lúc với giao diện trực quan và dễ sử dụng"
+        },
+        "taskTracking": {
+          "title": "Theo Dõi Task",
+          "description": "Kanban board linh hoạt giúp bạn theo dõi tiến độ công việc một cách trực quan"
+        },
+        "teamCollaboration": {
+          "title": "Cộng Tác Team",
+          "description": "Làm việc nhóm hiệu quả với phân quyền rõ ràng và quản lý thành viên dễ dàng"
+        },
+        "realtimeChat": {
+          "title": "Chat Thời Gian Thực",
+          "description": "Giao tiếp ngay lập tức với team qua chat tích hợp, hỗ trợ chat theo dự án và task"
+        }
+      }
+    },
+    "benefits": {
+      "title": "Tại Sao Chọn Chúng Tôi?",
+      "subtitle": "Nền tảng được thiết kế để giúp bạn làm việc tốt hơn",
+      "items": {
+        "efficiency": {
+          "title": "Tăng Hiệu Quả",
+          "description": "Tự động hóa quy trình làm việc và giảm thời gian quản lý"
+        },
+        "visibility": {
+          "title": "Minh Bạch",
+          "description": "Theo dõi tiến độ dự án và task một cách rõ ràng, minh bạch"
+        },
+        "scalability": {
+          "title": "Mở Rộng Dễ Dàng",
+          "description": "Phù hợp cho team nhỏ đến doanh nghiệp lớn"
+        },
+        "support": {
+          "title": "Hỗ Trợ 24/7",
+          "description": "Đội ngũ hỗ trợ luôn sẵn sàng giúp đỡ bạn"
+        }
+      }
+    },
+    "cta": {
+      "title": "Sẵn Sàng Bắt Đầu?",
+      "subtitle": "Tham gia cùng hàng ngàn team đang sử dụng nền tảng của chúng tôi",
+      "button": "Tạo Tài Khoản Miễn Phí"
+    },
+    "footer": {
+      "product": "Sản Phẩm",
+      "company": "Công Ty",
+      "resources": "Tài Nguyên",
+      "legal": "Pháp Lý",
+      "links": {
+        "features": "Tính Năng",
+        "pricing": "Giá Cả",
+        "about": "Về Chúng Tôi",
+        "contact": "Liên Hệ",
+        "blog": "Blog",
+        "documentation": "Tài Liệu",
+        "privacy": "Chính Sách Bảo Mật",
+        "terms": "Điều Khoản"
+      },
+      "copyright": "© 2024 MC One. Tất cả quyền được bảo lưu."
+    },
+    "testimonials": {
+      "title": "Khách Hàng Nói Gì Về Chúng Tôi",
+      "subtitle": "Hàng ngàn công ty đã tin tưởng và sử dụng MC One để quản lý dự án của họ",
+      "item1": {
+        "company": "TechCorp Vietnam",
+        "name": "Nguyễn Văn A",
+        "role": "Giám Đốc Dự Án",
+        "content": "MC One đã thay đổi cách chúng tôi quản lý dự án. Giao diện trực quan, tính năng mạnh mẽ và hỗ trợ tuyệt vời. Chúng tôi đã tăng năng suất lên 40%!"
+      },
+      "item2": {
+        "company": "StartupHub",
+        "name": "Trần Thị B",
+        "role": "CEO",
+        "content": "Nền tảng tốt nhất mà chúng tôi từng sử dụng. Đặc biệt là tính năng chat real-time và Kanban board giúp team làm việc rất hiệu quả."
+      },
+      "item3": {
+        "company": "Digital Solutions",
+        "name": "Lê Văn C",
+        "role": "CTO",
+        "content": "MC One không chỉ là công cụ quản lý dự án, mà còn là giải pháp toàn diện cho team. Chúng tôi rất hài lòng với dịch vụ này."
+      }
+    },
+    "about": {
+      "title": "Về MC One",
+      "subtitle": "Nền tảng quản lý dự án hàng đầu được tin dùng bởi hàng ngàn team và doanh nghiệp",
+      "mission": {
+        "title": "Sứ Mệnh",
+        "content": "MC One được tạo ra với sứ mệnh giúp các team và doanh nghiệp quản lý dự án hiệu quả hơn. Chúng tôi tin rằng công nghệ tốt sẽ giúp mọi người làm việc thông minh hơn, không phải chăm chỉ hơn."
+      },
+      "vision": {
+        "title": "Tầm Nhìn",
+        "content": "Trở thành nền tảng quản lý dự án được tin dùng nhất tại Việt Nam và khu vực. Chúng tôi hướng tới việc tạo ra một hệ sinh thái công cụ quản lý dự án hoàn chỉnh và dễ sử dụng."
+      },
+      "stats": {
+        "users": "10K+",
+        "usersLabel": "Người Dùng",
+        "projects": "50K+",
+        "projectsLabel": "Dự Án",
+        "companies": "500+",
+        "companiesLabel": "Công Ty",
+        "countries": "15+",
+        "countriesLabel": "Quốc Gia"
+      }
+    }
+  },
+  "common": {
+    "login": "Đăng Nhập",
+    "register": "Đăng Ký",
+    "logout": "Đăng Xuất",
+    "language": "Ngôn Ngữ",
+    "english": "Tiếng Anh",
+    "vietnamese": "Tiếng Việt",
+    "welcome": "Chào Mừng",
+    "welcomeBack": "Chào Mừng Trở Lại",
+    "signIn": "Đăng Nhập",
+    "signUp": "Đăng Ký",
+    "signInToContinue": "Đăng nhập để tiếp tục",
+    "dontHaveAccount": "Chưa có tài khoản?",
+    "alreadyHaveAccount": "Đã có tài khoản?",
+    "email": "Email",
+    "password": "Mật Khẩu",
+    "name": "Tên",
+    "confirmPassword": "Xác Nhận Mật Khẩu",
+    "fullName": "Họ và Tên",
+    "or": "hoặc"
+  },
+  "auth": {
+    "createAccount": "Tạo Tài Khoản",
+    "signUpToGetStarted": "Đăng ký để bắt đầu",
+    "loginSuccessful": "Đăng nhập thành công!",
+    "loginFailed": "Đăng nhập thất bại",
+    "registrationSuccessful": "Đăng ký thành công!",
+    "registrationFailed": "Đăng ký thất bại",
+    "passwordsDoNotMatch": "Mật khẩu không khớp!",
+    "pleaseInputEmail": "Vui lòng nhập email của bạn!",
+    "pleaseInputValidEmail": "Vui lòng nhập email hợp lệ!",
+    "pleaseInputPassword": "Vui lòng nhập mật khẩu!",
+    "pleaseInputName": "Vui lòng nhập tên của bạn!",
+    "pleaseConfirmPassword": "Vui lòng xác nhận mật khẩu!",
+    "passwordMinLength": "Mật khẩu phải có ít nhất 6 ký tự!"
+  }
+}
+

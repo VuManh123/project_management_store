@@ -1,0 +1,33 @@
+.language-switcher {
+  min-width: 140px;
+}
+
+.language-switcher .ant-select-selector {
+  border-radius: 6px;
+}
+
+.language-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.language-flag {
+  width: 20px;
+  height: 15px;
+  object-fit: cover;
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.language-switcher .ant-select-selection-item {
+  display: flex;
+  align-items: center;
+}
+
+.language-switcher .ant-select-selection-item .language-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+

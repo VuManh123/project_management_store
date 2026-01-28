@@ -65,10 +65,25 @@
   color: white;
 }
 
+.auth-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.auth-logo-image {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+}
+
 .auth-logo {
   font-size: 2.5rem;
   font-weight: 700;
-  margin-bottom: 10px;
+  margin: 0;
   background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -102,5 +117,9 @@
 
   .auth-logo {
     font-size: 2rem;
+  }
+
+  .auth-logo-image {
+    height: 40px;
   }
 }

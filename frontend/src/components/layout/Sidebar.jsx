@@ -90,7 +90,7 @@ const Sidebar = () => {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
             >
-              <h2 className="sidebar-logo">PM System</h2>
+              <h2 className="sidebar-logo">MC One</h2>
             </motion.div>
           ) : (
             <motion.div
@@ -100,7 +100,7 @@ const Sidebar = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="sidebar-logo-icon">PM</div>
+              <div className="sidebar-logo-icon">MC</div>
             </motion.div>
           )}
         </AnimatePresence>

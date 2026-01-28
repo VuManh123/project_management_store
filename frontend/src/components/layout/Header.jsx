@@ -62,6 +62,16 @@ const Header = ({ onMenuClick }) => {
             className="header-menu-button"
           />
         )}
+        <motion.div
+          className="header-logo-container"
+          onClick={() => navigate('/dashboard')}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+        >
+          <img src="/logo-mco.png" alt="MC One" className="header-logo-image" />
+          <span className="header-logo-text">MC One</span>
+        </motion.div>
         <AnimatePresence>
           {searchExpanded ? (
             <motion.div

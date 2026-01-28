@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+docs
+
+# Docker files (don't copy into containers)
+docker-compose.yml
+.dockerignore
+Dockerfile
+
+# Environment
+.env
+.env.local
+.env.*.local
+
