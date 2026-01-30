@@ -4,15 +4,15 @@
 # Build với API URL: VITE_API_BASE_URL=https://api.example.com/api docker-compose -f frontend/docker-compose.yml up -d --build
 
 services:
-  frontend:
+  frontend-pms:
     build:
       context: .
       dockerfile: Dockerfile
       target: production
       args:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:3000/api}
-    image: pm-frontend:latest
-    container_name: pm-frontend
+    image: frontend-pms:latest
+    container_name: frontend-pms
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-80}:80"

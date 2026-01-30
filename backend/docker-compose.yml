@@ -49,13 +49,13 @@ services:
     networks:
       - pm-network
 
-  backend:
+  backend-pms:
     build:
       context: .
       dockerfile: Dockerfile
       target: production
-    image: pm-backend:latest
-    container_name: pm-backend
+    image: backend-pms:latest
+    container_name: backend-pms
     restart: unless-stopped
     ports:
       - "${BACKEND_PORT:-3000}:3000"

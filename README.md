@@ -19,34 +19,35 @@ Chỉnh và đổi `JWT_SECRET` khi deploy production.
 
 ### 2. Production (build & chạy)
 
-**Full stack (mysql, phpmyadmin, backend, frontend):** merge 2 compose trong `backend/` và `frontend/`:
+**Full stack** (từ root, merge 2 compose):
 
 ```bash
-docker-compose -f backend/docker-compose.yml -f frontend/docker-compose.yml up -d --build
-# hoặc: make up
+docker compose -f backend/docker-compose.yml -f frontend/docker-compose.yml up -d --build
 ```
 
-**Chỉ backend (cấu hình trong `backend/`):**
+**Chỉ backend** (từ root hoặc `cd backend` rồi `docker compose up -d --build`):
 
 ```bash
-docker-compose -f backend/docker-compose.yml up -d --build
-# hoặc: make up-backend
+docker compose -f backend/docker-compose.yml up -d --build
 ```
 
-**Chỉ frontend (cấu hình trong `frontend/`; API ở host khác thì set `VITE_API_BASE_URL` khi build):**
+**Chỉ frontend** (từ root hoặc trong `frontend/`; API ở host khác thì set `VITE_API_BASE_URL` khi build):
 
 ```bash
-VITE_API_BASE_URL=https://api.example.com/api docker-compose -f frontend/docker-compose.yml up -d --build
-# hoặc: make build-frontend && make up-frontend
+VITE_API_BASE_URL=https://api.example.com/api docker compose -f frontend/docker-compose.yml up -d --build
 ```
 
 ### 3. Development (hot reload)
 
+**Full stack dev** (từ root):
+
 ```bash
-docker-compose -f docker-compose.dev.yml -f backend/docker-compose.yml -f frontend/docker-compose.yml up -d
-# hoặc: make dev
-# Backend: http://localhost:3000, Frontend: http://localhost:5173
+docker compose -f backend/docker-compose.yml -f backend/docker-compose.dev.yml -f frontend/docker-compose.yml -f frontend/docker-compose.dev.yml up -d
 ```
+Backend: http://localhost:3000, Frontend: http://localhost:5173
+
+**Chỉ backend dev** (trong `backend/`): `make dev` hoặc `docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d`  
+**Chỉ frontend dev** (trong `frontend/`): `make dev` hoặc `docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d`
 
 ## 📦 Services
 
@@ -61,25 +62,19 @@ docker-compose -f docker-compose.dev.yml -f backend/docker-compose.yml -f fronte
 - **API docs**: `http://localhost:3000/api-docs`
 - **Frontend**: `http://localhost` (prod) hoặc `http://localhost:5173` (dev)
 
-## 🛠️ Lệnh thường dùng
+## 🛠️ Lệnh thường dùng (chạy từ root)
 
-```bash
-make build           # Build cả backend + frontend
-make build-backend   # Chỉ build image backend
-make build-frontend  # Chỉ build image frontend
-make up              # Chạy full stack
-make up-backend      # Chỉ chạy backend stack (mysql, phpmyadmin, backend)
-make up-frontend     # Chỉ chạy frontend
-make down            # Dừng full stack
-make dev             # Chạy dev (override, hot reload)
-make dev-down        # Dừng dev
-make ps              # Danh sách container
-make logs            # Log tất cả
-make logs-backend    # Log backend
-make rebuild         # Build lại không dùng cache
-make shell-backend   # Vào shell backend
-make shell-mysql     # MySQL CLI
-```
+| Mục đích | Lệnh |
+|----------|------|
+| Full stack up | `docker compose -f backend/docker-compose.yml -f frontend/docker-compose.yml up -d --build` |
+| Full stack down | `docker compose -f backend/docker-compose.yml -f frontend/docker-compose.yml down` |
+| Full stack dev up | `docker compose -f backend/docker-compose.yml -f backend/docker-compose.dev.yml -f frontend/docker-compose.yml -f frontend/docker-compose.dev.yml up -d` |
+| Chỉ backend (trong `backend/`) | `docker compose up -d --build` hoặc `make dev` (dev) |
+| Chỉ frontend (trong `frontend/`) | `docker compose up -d --build` hoặc `make dev` (dev) |
+| Xem container | `docker compose -f backend/docker-compose.yml -f frontend/docker-compose.yml ps` |
+| Logs | `docker compose -f backend/docker-compose.yml -f frontend/docker-compose.yml logs -f` |
+| Shell backend-pms | `docker compose -f backend/docker-compose.yml -f frontend/docker-compose.yml exec backend-pms sh` |
+| Shell mysql | `docker compose -f backend/docker-compose.yml exec mysql sh -c 'mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE'` |
 
 ## 🔧 Biến môi trường (.env)
 
@@ -87,11 +82,36 @@ make shell-mysql     # MySQL CLI
 - **Backend**: `JWT_SECRET` (bắt buộc đổi khi production), `DATABASE_ENV`, `CLOUDINARY_*` (nếu dùng upload ảnh)
 - **Frontend**: `VITE_API_BASE_URL` (dùng lúc **build**; production thường là `http://localhost:3000/api` hoặc URL API thật)
 
-## 🏗️ Kiến trúc & Build (tách biệt backend / frontend)
+## 📁 Kiến trúc thư mục (chuẩn)
 
-- **Backend** (`backend/`): `Dockerfile` + `docker-compose.yml` (stack MySQL, phpMyAdmin, API). Multi-stage, non-root. Build/run riêng: `make build-backend` / `make up-backend` hoặc `docker-compose -f backend/docker-compose.yml up -d --build`.
-- **Frontend** (`frontend/`): `Dockerfile` + `docker-compose.yml` + `nginx.conf`. Multi-stage (Vite → Nginx); `VITE_API_BASE_URL` qua build arg. Build/run riêng: `make build-frontend` / `make up-frontend` hoặc `docker-compose -f frontend/docker-compose.yml up -d --build`.
-- **Root**: Chỉ còn `docker-compose.dev.yml` (override dev cho backend + frontend) và `Makefile` (gọi merge `backend/docker-compose.yml` + `frontend/docker-compose.yml`). Full stack không cần file compose riêng ở root.
+```
+project-management-store/
+├── backend/                    # API Node.js — không có thư mục backend/backend
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   ├── docker-compose.dev.yml
+│   ├── Makefile
+│   ├── package.json
+│   ├── .env                    # env cho backend (và MYSQL_* khi chạy compose từ backend/)
+│   ├── configs/, database/, modules/, ...
+│   └── ...
+├── frontend/                   # React + Vite — không có thư mục frontend/frontend
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   ├── docker-compose.dev.yml
+│   ├── Makefile
+│   ├── nginx.conf
+│   ├── package.json
+│   ├── src/, public/, ...
+│   └── ...
+├── README.md
+└── .gitignore
+```
+
+- **Không** có `backend/backend/` hay `frontend/frontend/` — nếu xuất hiện (do volume mount sai hoặc chạy compose sai thư mục) thì xóa đi và chạy compose đúng cách (xem Quick Start).
+- **Backend** (`backend/`): toàn bộ cấu hình Docker và code API trong một cấp `backend/`. Build/run: `docker compose up -d --build`; dev: `make dev`.
+- **Frontend** (`frontend/`): toàn bộ cấu hình Docker và code React trong một cấp `frontend/`. Build/run: `docker compose up -d --build`; dev: `make dev`.
+- **Root**: chỉ README, .gitignore; không có Makefile/compose. Full stack: merge compose từ root (xem bảng lệnh trên).
 
 ## 🔒 Bảo mật
 
@@ -101,9 +121,9 @@ make shell-mysql     # MySQL CLI
 
 ## 🐛 Xử lý lỗi
 
-- **Backend lỗi DB**: Kiểm tra MySQL đã healthy (`make ps`), `DATABASE_HOST=mysql` trong container.
-- **Frontend gọi API sai**: Đảm bảo `VITE_API_BASE_URL` đúng khi **build**; rebuild: `make build-frontend` với env `VITE_API_BASE_URL` đúng.
-- **Dev thiếu module**: Chạy lại dev stack để chạy `npm install` trong container: `make dev-down && make dev`.
+- **Backend lỗi DB**: Kiểm tra MySQL đã healthy (`docker compose -f backend/docker-compose.yml ps`), `DATABASE_HOST=mysql` trong container.
+- **Frontend gọi API sai**: Đảm bảo `VITE_API_BASE_URL` đúng khi **build**; rebuild image frontend với env đúng.
+- **Dev thiếu module**: Chạy lại dev trong thư mục tương ứng: `cd backend && make dev-down && make dev` hoặc `cd frontend && make dev-down && make dev`.
 
 ## 🔗 Tài liệu
 
