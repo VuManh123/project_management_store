@@ -125,11 +125,13 @@ const Sidebar = () => {
       <div className="sidebar-footer">
         <Menu
           mode="inline"
+          selectedKeys={location.pathname === '/profile' ? ['profile'] : []}
           items={[
             {
               key: 'profile',
               icon: <UserOutlined />,
               label: collapsed ? '' : 'Profile',
+              onClick: () => navigate('/profile'),
             },
             {
               key: 'logout',

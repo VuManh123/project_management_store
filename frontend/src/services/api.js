@@ -75,6 +75,12 @@ export const authAPI = {
   logout: () => api.post('/auth/logout'),
   refreshToken: (refreshToken) => api.post('/auth/refresh', { refreshToken }),
   getProfile: () => api.get('/auth/profile'),
+  // data: { name?, email? } or FormData (name, email, avatar file)
+  updateProfile: (data) => {
+    const isFormData = data instanceof FormData;
+    const config = isFormData ? { headers: { 'Content-Type': undefined } } : {};
+    return api.put('/auth/profile', data, config);
+  },
 };
 
 export const projectAPI = {

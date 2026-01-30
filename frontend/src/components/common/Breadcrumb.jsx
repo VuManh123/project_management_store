@@ -13,6 +13,7 @@ const Breadcrumb = () => {
     projects: 'Projects',
     tasks: 'Tasks',
     chat: 'Chat',
+    profile: 'Profile',
     login: 'Login',
     register: 'Register',
   };

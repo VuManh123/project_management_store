@@ -74,8 +74,8 @@
 }
 
 .sidebar-menu .ant-menu-item:hover {
-  background: var(--sidebar-hover);
-  color: var(--sidebar-text);
+  background: var(--sidebar-hover) !important;
+  color: white !important;
 }
 
 .sidebar-menu .ant-menu-item-selected {
@@ -113,8 +113,8 @@
 }
 
 .sidebar-footer-menu .ant-menu-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
 }
 
 .sidebar-footer-menu .ant-menu-item-danger {

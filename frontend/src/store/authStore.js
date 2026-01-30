@@ -132,6 +132,36 @@ const useAuthStore = create((set, get) => ({
         }
       },
 
+      // Update profile (data: { name?, email? } or FormData with optional avatar file)
+      updateProfile: async (data) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await authAPI.updateProfile(data);
+          const user = response.data?.data || response.data;
+          set({
+            user,
+            isLoading: false,
+            error: null,
+          });
+          return { success: true, user };
+        } catch (error) {
+          let errorMessage = error.response?.data?.message || 'Failed to update profile';
+          if (error.response?.status === 422) {
+            const errors = error.response?.data?.data;
+            if (errors?.errors && Array.isArray(errors.errors)) {
+              errorMessage = errors.errors.map((e) => e.message || e.msg).join(', ');
+            } else if (errors?.message) {
+              errorMessage = errors.message;
+            }
+          }
+          set({
+            isLoading: false,
+            error: errorMessage,
+          });
+          return { success: false, error: errorMessage };
+        }
+      },
+
       // Refresh token
       refreshToken: async () => {
         try {

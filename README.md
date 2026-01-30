@@ -1,201 +1,113 @@
 # 🐳 Docker Setup Guide
 
-Hướng dẫn triển khai ứng dụng Project Management với Docker.
+Stack: **Node.js** (backend), **React/Vite** (frontend), **MySQL 8**, **phpMyAdmin**.  
+**Backend và frontend build độc lập** — mỗi phần một image, scale riêng được.
 
 ## 📋 Yêu cầu
 
 - Docker Engine 20.10+
 - Docker Compose 2.0+
-- ít nhất 4GB RAM
+- ~4GB RAM
 
 ## 🚀 Quick Start
 
-### 1. Cấu hình môi trường
+### 1. Cấu hình
 
-Copy file `.docker/env.example` và tạo file `.env`:
+- Backend: copy `backend/.env.example` → `backend/.env` (nếu có).
+- Root: tạo `.env` ở thư mục gốc nếu dùng biến cho compose (vd. `MYSQL_*`, `JWT_SECRET`).  
+Chỉnh và đổi `JWT_SECRET` khi deploy production.
+
+### 2. Production (build & chạy)
+
+**Full stack (mysql, phpmyadmin, backend, frontend):** merge 2 compose trong `backend/` và `frontend/`:
 
 ```bash
-cp .docker/env.example .env
+docker-compose -f backend/docker-compose.yml -f frontend/docker-compose.yml up -d --build
+# hoặc: make up
 ```
 
-Chỉnh sửa file `.env` với các giá trị phù hợp (đặc biệt là `JWT_SECRET`).
-
-### 2. Chạy Production
+**Chỉ backend (cấu hình trong `backend/`):**
 
 ```bash
-# Build và chạy tất cả services
-docker-compose up -d
-
-# Xem logs
-docker-compose logs -f
-
-# Dừng services
-docker-compose down
-
-# Dừng và xóa volumes (xóa database)
-docker-compose down -v
+docker-compose -f backend/docker-compose.yml up -d --build
+# hoặc: make up-backend
 ```
 
-### 3. Chạy Development Mode
+**Chỉ frontend (cấu hình trong `frontend/`; API ở host khác thì set `VITE_API_BASE_URL` khi build):**
 
 ```bash
-# Chạy với hot reload
-docker-compose --profile dev up -d
+VITE_API_BASE_URL=https://api.example.com/api docker-compose -f frontend/docker-compose.yml up -d --build
+# hoặc: make build-frontend && make up-frontend
+```
 
-# Hoặc sử dụng override file
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+### 3. Development (hot reload)
+
+```bash
+docker-compose -f docker-compose.dev.yml -f backend/docker-compose.yml -f frontend/docker-compose.yml up -d
+# hoặc: make dev
+# Backend: http://localhost:3000, Frontend: http://localhost:5173
 ```
 
 ## 📦 Services
 
-### MySQL Database
-- **Port**: 3306 (mặc định)
-- **Database**: `core` (có thể thay đổi trong `.env`)
-- **User**: `appuser` (có thể thay đổi trong `.env`)
-- **Password**: `apppassword` (có thể thay đổi trong `.env`)
+| Service    | Port (mặc định) | Mô tả                    |
+|-----------|------------------|---------------------------|
+| MySQL     | 3306             | Database                  |
+| phpMyAdmin| 8080             | Giao diện quản lý MySQL   |
+| Backend   | 3000             | API Node.js (image riêng) |
+| Frontend  | 80 (prod) / 5173 (dev) | React + Nginx (image riêng) |
 
-### Backend API
-- **Port**: 3000 (mặc định)
-- **Health Check**: `http://localhost:3000/api/health`
-- **API Docs**: `http://localhost:3000/api-docs`
+- **Backend health**: `http://localhost:3000/api/health`
+- **API docs**: `http://localhost:3000/api-docs`
+- **Frontend**: `http://localhost` (prod) hoặc `http://localhost:5173` (dev)
 
-### Frontend
-- **Port**: 80 (production) hoặc 5173 (development)
-- **URL**: `http://localhost`
-
-## 🛠️ Development Commands
-
-### Build lại images
-```bash
-docker-compose build
-docker-compose build --no-cache  # Build từ đầu
-```
-
-### Xem logs của service cụ thể
-```bash
-docker-compose logs -f backend
-docker-compose logs -f frontend
-docker-compose logs -f mysql
-```
-
-### Vào container để debug
-```bash
-# Backend
-docker-compose exec backend sh
-
-# Frontend
-docker-compose exec frontend sh
-
-# MySQL
-docker-compose exec mysql mysql -u appuser -p
-```
-
-### Chạy migrations (nếu có)
-```bash
-docker-compose exec backend npm run migrate
-```
-
-### Restart service
-```bash
-docker-compose restart backend
-docker-compose restart frontend
-```
-
-## 🔧 Cấu hình
-
-### Environment Variables
-
-Tất cả các biến môi trường được định nghĩa trong file `.env`:
-
-- `MYSQL_ROOT_PASSWORD`: Mật khẩu root của MySQL
-- `MYSQL_DATABASE`: Tên database
-- `MYSQL_USER`: User database
-- `MYSQL_PASSWORD`: Mật khẩu database
-- `JWT_SECRET`: Secret key cho JWT (QUAN TRỌNG: đổi trong production!)
-- `NODE_ENV`: Môi trường (development/production)
-- `BACKEND_PORT`: Port cho backend API
-- `FRONTEND_PORT`: Port cho frontend
-
-### Volumes
-
-- `mysql_data`: Lưu trữ dữ liệu MySQL
-- `./backend:/app`: Mount code backend (development)
-- `./frontend:/app`: Mount code frontend (development)
-
-## 🏗️ Build Process
-
-### Backend
-1. **Dependencies stage**: Cài đặt production dependencies
-2. **Dev-dependencies stage**: Cài đặt tất cả dependencies (cho dev)
-3. **Build stage**: Build application (nếu cần)
-4. **Production stage**: Image cuối cùng với non-root user
-
-### Frontend
-1. **Dependencies stage**: Cài đặt dependencies
-2. **Build stage**: Build React app với Vite
-3. **Production stage**: Serve với Nginx
-
-## 🔒 Security Best Practices
-
-- ✅ Sử dụng non-root user trong containers
-- ✅ Health checks cho tất cả services
-- ✅ Multi-stage builds để giảm image size
-- ✅ .dockerignore để loại bỏ files không cần thiết
-- ✅ Environment variables cho sensitive data
-
-## 📊 Monitoring
-
-### Health Checks
-
-Tất cả services đều có health checks:
-
-- **MySQL**: `mysqladmin ping`
-- **Backend**: `GET /api/health`
-- **Frontend**: `GET /health`
-
-Kiểm tra health status:
-```bash
-docker-compose ps
-```
-
-### Resource Usage
+## 🛠️ Lệnh thường dùng
 
 ```bash
-docker stats
+make build           # Build cả backend + frontend
+make build-backend   # Chỉ build image backend
+make build-frontend  # Chỉ build image frontend
+make up              # Chạy full stack
+make up-backend      # Chỉ chạy backend stack (mysql, phpmyadmin, backend)
+make up-frontend     # Chỉ chạy frontend
+make down            # Dừng full stack
+make dev             # Chạy dev (override, hot reload)
+make dev-down        # Dừng dev
+make ps              # Danh sách container
+make logs            # Log tất cả
+make logs-backend    # Log backend
+make rebuild         # Build lại không dùng cache
+make shell-backend   # Vào shell backend
+make shell-mysql     # MySQL CLI
 ```
 
-## 🐛 Troubleshooting
+## 🔧 Biến môi trường (.env)
 
-### Backend không kết nối được database
-- Kiểm tra MySQL đã chạy: `docker-compose ps`
-- Kiểm tra `DATABASE_HOST` trong `.env` phải là `mysql`
-- Kiểm tra logs: `docker-compose logs mysql`
+- **MySQL**: `MYSQL_ROOT_PASSWORD`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_PORT`
+- **Backend**: `JWT_SECRET` (bắt buộc đổi khi production), `DATABASE_ENV`, `CLOUDINARY_*` (nếu dùng upload ảnh)
+- **Frontend**: `VITE_API_BASE_URL` (dùng lúc **build**; production thường là `http://localhost:3000/api` hoặc URL API thật)
 
-### Frontend không load được
-- Kiểm tra backend đã chạy: `docker-compose ps`
-- Kiểm tra `VITE_API_URL` trong `.env`
-- Rebuild frontend: `docker-compose build frontend`
+## 🏗️ Kiến trúc & Build (tách biệt backend / frontend)
 
-### Port đã được sử dụng
-- Đổi port trong file `.env`
-- Hoặc dừng service đang dùng port đó
+- **Backend** (`backend/`): `Dockerfile` + `docker-compose.yml` (stack MySQL, phpMyAdmin, API). Multi-stage, non-root. Build/run riêng: `make build-backend` / `make up-backend` hoặc `docker-compose -f backend/docker-compose.yml up -d --build`.
+- **Frontend** (`frontend/`): `Dockerfile` + `docker-compose.yml` + `nginx.conf`. Multi-stage (Vite → Nginx); `VITE_API_BASE_URL` qua build arg. Build/run riêng: `make build-frontend` / `make up-frontend` hoặc `docker-compose -f frontend/docker-compose.yml up -d --build`.
+- **Root**: Chỉ còn `docker-compose.dev.yml` (override dev cho backend + frontend) và `Makefile` (gọi merge `backend/docker-compose.yml` + `frontend/docker-compose.yml`). Full stack không cần file compose riêng ở root.
 
-### Xóa tất cả và bắt đầu lại
-```bash
-docker-compose down -v
-docker system prune -a
-docker-compose up -d --build
-```
+## 🔒 Bảo mật
 
-## 📝 Notes
+- Non-root user trong container backend.
+- Health check cho mysql, backend, frontend.
+- Multi-stage build, `.dockerignore` để giảm context và bề mặt tấn công.
 
-- Database data được lưu trong volume `mysql_data`, sẽ không mất khi restart
-- Development mode sử dụng volume mounts để hot reload
-- Production mode sử dụng built images để tối ưu performance
+## 🐛 Xử lý lỗi
 
-## 🔗 Useful Links
+- **Backend lỗi DB**: Kiểm tra MySQL đã healthy (`make ps`), `DATABASE_HOST=mysql` trong container.
+- **Frontend gọi API sai**: Đảm bảo `VITE_API_BASE_URL` đúng khi **build**; rebuild: `make build-frontend` với env `VITE_API_BASE_URL` đúng.
+- **Dev thiếu module**: Chạy lại dev stack để chạy `npm install` trong container: `make dev-down && make dev`.
 
-- [Docker Documentation](https://docs.docker.com/)
-- [Docker Compose Documentation](https://docs.docker.com/compose/)
+## 🔗 Tài liệu
+
+- [Docker](https://docs.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
 - [Node.js Docker Best Practices](https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md)
 

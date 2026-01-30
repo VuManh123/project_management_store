@@ -1,58 +1,52 @@
-# Multi-stage build for Node.js Backend
-# Stage 1: Dependencies
+# Backend - Node.js API
+# Multi-stage build for smaller production image
+# ==============================================
+
+# ---------------------------------------------
+# Stage 1: Production dependencies
+# ---------------------------------------------
 FROM node:20-alpine AS dependencies
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy only package files first (better layer cache)
+COPY package.json package-lock.json* ./
 
-# Install dependencies (skip husky scripts in Docker)
-RUN npm ci --only=production --ignore-scripts && npm cache clean --force
+# Install production dependencies only, no scripts (faster, smaller)
+RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
-# Stage 2: Development dependencies
+# ---------------------------------------------
+# Stage 2: Dev dependencies (for dev profile only)
+# ---------------------------------------------
 FROM node:20-alpine AS dev-dependencies
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json package-lock.json* ./
 
-# Install all dependencies (including dev, skip husky scripts in Docker)
 RUN npm ci --ignore-scripts && npm cache clean --force
 
-# Stage 3: Build (if needed for production)
-FROM node:20-alpine AS build
-
-WORKDIR /app
-
-COPY --from=dev-dependencies /app/node_modules ./node_modules
-COPY . .
-
-# Stage 4: Production
+# ---------------------------------------------
+# Stage 3: Production
+# ---------------------------------------------
 FROM node:20-alpine AS production
 
 WORKDIR /app
 
-# Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
 
-# Copy production dependencies
+# Copy production node_modules from dependencies stage
 COPY --from=dependencies --chown=nodejs:nodejs /app/node_modules ./node_modules
 
 # Copy application code
 COPY --chown=nodejs:nodejs . .
 
-# Switch to non-root user
 USER nodejs
 
-# Expose port
 EXPOSE 3000
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})" || exit 1
+  CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))" || exit 1
 
-# Start application
 CMD ["node", "server.js"]
-

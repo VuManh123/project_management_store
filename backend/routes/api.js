@@ -3,6 +3,7 @@ const express = require("express");
 const middlewares = require("kernels/middlewares");
 const { validate } = require("kernels/validations");
 const authenticated = require("kernels/middlewares/authenticated");
+const uploadAvatar = require("kernels/middlewares/uploadAvatar");
 const exampleController = require("modules/examples/controllers/exampleController");
 const authController = require("modules/auth/controllers/authController");
 const authValidation = require("modules/auth/validations/authValidation");
@@ -36,6 +37,12 @@ router.group("/auth", validate([]), (router) => {
 // Protected auth routes
 router.group("/auth", middlewares([authenticated]), (router) => {
   router.get("/profile", authController.getProfile);
+  router.put(
+    "/profile",
+    uploadAvatar,
+    validate(authValidation.updateProfile),
+    authController.updateProfile
+  );
 });
 
 // Example routes

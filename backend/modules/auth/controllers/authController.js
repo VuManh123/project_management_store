@@ -5,6 +5,7 @@ const { config } = require("configs");
 const db = require("models");
 const UserStatus = require("enums/UserStatus");
 const ProjectMemberRole = require("enums/ProjectMemberRole");
+const cloudinaryUtils = require("utils/cloudinaryUtils");
 
 const authController = {
   // Login with email and password
@@ -198,6 +199,77 @@ const authController = {
     } catch (error) {
       console.error("Get profile error:", error);
       return responseUtils.error(res, "Failed to get profile");
+    }
+  },
+
+  // Update user profile (name, email, avatar via Cloudinary)
+  updateProfile: async (req, res) => {
+    try {
+      const userId = req.user?.userId;
+
+      if (!userId) {
+        return responseUtils.unauthorized(res, "User not authenticated");
+      }
+
+      const user = await db.User.findByPk(userId);
+      if (!user) {
+        return responseUtils.notFound(res);
+      }
+
+      const updateData = {};
+
+      if (req.body.name !== undefined && req.body.name !== "") {
+        updateData.name = req.body.name.trim();
+      }
+      if (req.body.email !== undefined && req.body.email !== "") {
+        updateData.email = req.body.email.toLowerCase().trim();
+      }
+
+      // Upload avatar to Cloudinary if file is present
+      if (req.file && req.file.buffer) {
+        try {
+          if (!config.cloudinary.cloud_name || !config.cloudinary.api_key) {
+            return responseUtils.error(
+              res,
+              "Cloudinary is not configured. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET."
+            );
+          }
+          const folder = "avatars";
+          const publicId = `user_${userId}_${Date.now()}`;
+          const { url } = await cloudinaryUtils.uploadFromBuffer(
+            req.file.buffer,
+            folder,
+            publicId
+          );
+          updateData.avatar = url;
+        } catch (uploadError) {
+          console.error("Cloudinary upload error:", uploadError);
+          return responseUtils.error(res, "Failed to upload avatar");
+        }
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        return responseUtils.invalidated(res, {
+          message: "No valid fields to update. Send name, email, or avatar.",
+        });
+      }
+
+      await user.update(updateData);
+
+      const userData = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        status: user.status,
+        createdAt: user.created_at,
+        updatedAt: user.updated_at,
+      };
+
+      return responseUtils.ok(res, userData);
+    } catch (error) {
+      console.error("Update profile error:", error);
+      return responseUtils.error(res, "Failed to update profile");
     }
   },
 
