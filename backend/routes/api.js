@@ -3,8 +3,10 @@ const express = require("express");
 const middlewares = require("kernels/middlewares");
 const { validate } = require("kernels/validations");
 const authenticated = require("kernels/middlewares/authenticated");
+const uploadAvatar = require("kernels/middlewares/uploadAvatar");
 const exampleController = require("modules/examples/controllers/exampleController");
 const authController = require("modules/auth/controllers/authController");
+const authValidation = require("modules/auth/validations/authValidation");
 const router = express.Router({ mergeParams: true });
 
 // Health check endpoint (for Docker health checks)
@@ -26,15 +28,21 @@ router.get("/health", (req, res) => {
 
 // Auth routes (no authentication required)
 router.group("/auth", validate([]), (router) => {
-  router.post("/login", authController.login);
-  router.post("/register", authController.register);
+  router.post("/login", validate(authValidation.login), authController.login);
+  router.post("/register", validate(authValidation.register), authController.register);
   router.post("/logout", authController.logout);
-  router.post("/refresh", authController.refreshToken);
+  router.post("/refresh", validate(authValidation.refreshToken), authController.refreshToken);
 });
 
 // Protected auth routes
 router.group("/auth", middlewares([authenticated]), (router) => {
   router.get("/profile", authController.getProfile);
+  router.put(
+    "/profile",
+    uploadAvatar,
+    validate(authValidation.updateProfile),
+    authController.updateProfile
+  );
 });
 
 // Example routes

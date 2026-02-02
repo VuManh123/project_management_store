@@ -150,6 +150,19 @@
     "fullName": "Full Name",
     "or": "or"
   },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Update your personal information and avatar",
+    "name": "Full Name",
+    "email": "Email",
+    "avatar": "Avatar",
+    "uploadAvatar": "Upload new avatar",
+    "avatarHint": "JPEG, PNG, GIF or WebP. Max 5MB.",
+    "save": "Save Changes",
+    "updateSuccess": "Profile updated successfully!",
+    "updateFailed": "Failed to update profile",
+    "noChanges": "No valid fields to update"
+  },
   "auth": {
     "createAccount": "Create Account",
     "signUpToGetStarted": "Sign up to get started",

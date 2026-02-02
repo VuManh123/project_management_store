@@ -1,0 +1,30 @@
+# Docker Compose - Frontend only (React + Nginx)
+# Mọi cấu hình build/run frontend nằm trong thư mục frontend/.
+# Chạy từ repo root: docker-compose -f frontend/docker-compose.yml up -d
+# Build với API URL: VITE_API_BASE_URL=https://api.example.com/api docker-compose -f frontend/docker-compose.yml up -d --build
+
+services:
+  frontend-pms:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:3000/api}
+    image: frontend-pms:latest
+    container_name: frontend-pms
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    networks:
+      - pm-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  pm-network:
+    driver: bridge

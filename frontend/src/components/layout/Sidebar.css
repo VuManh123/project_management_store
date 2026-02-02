@@ -9,7 +9,7 @@
   padding: 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   min-height: 64px;
 }
@@ -38,23 +38,6 @@
   font-size: 14px;
 }
 
-.sidebar-toggle {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: white;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.sidebar-toggle:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
 
 .sidebar-menu {
   background: transparent;
@@ -74,8 +57,8 @@
 }
 
 .sidebar-menu .ant-menu-item:hover {
-  background: var(--sidebar-hover);
-  color: var(--sidebar-text);
+  background: var(--sidebar-hover) !important;
+  color: white !important;
 }
 
 .sidebar-menu .ant-menu-item-selected {
@@ -113,8 +96,8 @@
 }
 
 .sidebar-footer-menu .ant-menu-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
 }
 
 .sidebar-footer-menu .ant-menu-item-danger {
@@ -152,5 +135,17 @@
     bottom: 0;
     z-index: 1000;
     height: 100vh;
+  }
+
+  /* Ẩn nút collapse trên mobile */
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  /* Sidebar luôn full width trên mobile */
+  .sidebar {
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
   }
 }

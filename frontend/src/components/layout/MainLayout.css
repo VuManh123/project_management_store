@@ -4,8 +4,7 @@
 }
 
 .main-layout-content {
-  margin-left: 0;
-  transition: margin-left 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .main-content {
@@ -19,6 +18,25 @@
 
 .page-container {
   width: 100%;
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  /* Hiển thị overlay trên mobile khi sidebar mở */
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+    cursor: pointer;
+  }
 }
 
 @media (max-width: 768px) {

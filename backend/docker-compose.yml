@@ -1,0 +1,95 @@
+# Docker Compose - Backend stack (MySQL, phpMyAdmin, API)
+# Mọi cấu hình build/run backend nằm trong thư mục backend/.
+# Chạy từ repo root: docker-compose -f backend/docker-compose.yml up -d
+# Build:  docker-compose -f backend/docker-compose.yml up -d --build
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: pm-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-core}
+      MYSQL_USER: ${MYSQL_USER:-appuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-apppassword}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - pm-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: pm-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: ${MYSQL_USER:-appuser}
+      PMA_PASSWORD: ${MYSQL_PASSWORD:-apppassword}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+    ports:
+      - "${PHPMYADMIN_PORT:-8080}:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - pm-network
+
+  backend-pms:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: backend-pms:latest
+    container_name: backend-pms
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    env_file:
+      - ./.env
+    environment:
+      NODE_ENV: production
+      DATABASE_ENV: ${DATABASE_ENV:-development}
+      DATABASE_HOST: mysql
+      DATABASE_PORT: 3306
+      DATABASE_USERNAME: ${MYSQL_USER:-appuser}
+      DATABASE_PASSWORD: ${MYSQL_PASSWORD:-apppassword}
+      DATABASE_NAME: ${MYSQL_DATABASE:-core}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      PORT: 3000
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - pm-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  pm-network:
+    driver: bridge

@@ -28,11 +28,11 @@ module.exports = {
     },
   },
   production: {
-    username: process.env.PROD_DB_USERNAME,
-    password: process.env.PROD_DB_PASSWORD,
-    database: process.env.PROD_DB_NAME,
-    host: process.env.PROD_DB_HOSTNAME,
-    port: process.env.PROD_DB_PORT,
+    username: process.env.PROD_DB_USERNAME || process.env.DATABASE_USERNAME || "root",
+    password: process.env.PROD_DB_PASSWORD || process.env.DATABASE_PASSWORD || "root",
+    database: process.env.PROD_DB_NAME || process.env.DATABASE_NAME || "core",
+    host: process.env.PROD_DB_HOSTNAME || process.env.DATABASE_HOST || "localhost",
+    port: process.env.PROD_DB_PORT || process.env.DATABASE_PORT || 3306,
     dialect: "mysql",
     dialectOptions: {
       bigNumberStrings: true,

@@ -18,6 +18,7 @@ import TaskDetail from './pages/tasks/TaskDetail';
 import SubmitReport from './pages/tasks/SubmitReport';
 import ReviewTask from './pages/tasks/ReviewTask';
 import Chat from './pages/chat/Chat';
+import Profile from './pages/profile/Profile';
 import NotFound from './pages/NotFound';
 import useAuthStore from './store/authStore';
 import useLanguageStore from './store/languageStore';
@@ -160,6 +161,16 @@ function App() {
                 }
               >
                 <Route index element={<Chat />} />
+              </Route>
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <MainLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<Profile />} />
               </Route>
 
               {/* 404 */}

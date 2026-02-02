@@ -150,6 +150,19 @@
     "fullName": "Họ và Tên",
     "or": "hoặc"
   },
+  "profile": {
+    "title": "Hồ Sơ Của Tôi",
+    "subtitle": "Cập nhật thông tin cá nhân và ảnh đại diện",
+    "name": "Họ và tên",
+    "email": "Email",
+    "avatar": "Ảnh đại diện",
+    "uploadAvatar": "Tải ảnh đại diện mới",
+    "avatarHint": "JPEG, PNG, GIF hoặc WebP. Tối đa 5MB.",
+    "save": "Lưu thay đổi",
+    "updateSuccess": "Cập nhật hồ sơ thành công!",
+    "updateFailed": "Cập nhật hồ sơ thất bại",
+    "noChanges": "Không có trường nào để cập nhật"
+  },
   "auth": {
     "createAccount": "Tạo Tài Khoản",
     "signUpToGetStarted": "Đăng ký để bắt đầu",
