@@ -14,10 +14,31 @@ const { Content } = Layout;
 
 const MainLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(true);
   const location = useLocation();
   const { isAuthenticated, token } = useAuthStore();
   const { connect, disconnect, connected, on } = useSocketStore();
   const { addNotification, fetchNotifications } = useNotificationStore();
+
+  // Reset collapsed state on mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 992) {
+        setSidebarCollapsed(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Auto-hide sidebar on mobile when route changes
+  useEffect(() => {
+    if (window.innerWidth <= 992) {
+      setSidebarVisible(false);
+    }
+  }, [location.pathname]);
 
   // Initialize socket connection
   useEffect(() => {
@@ -85,9 +106,18 @@ const MainLayout = () => {
 
   return (
     <Layout className="main-layout">
-      <Sidebar />
+      {sidebarVisible && (
+        <>
+          <Sidebar collapsed={sidebarCollapsed} onCollapse={setSidebarCollapsed} />
+          {/* Overlay for mobile when sidebar is open */}
+          <div 
+            className="sidebar-overlay" 
+            onClick={() => setSidebarVisible(false)}
+          />
+        </>
+      )}
       <Layout className="main-layout-content">
-        <Header onMenuClick={() => setSidebarCollapsed(!sidebarCollapsed)} />
+        <Header onMenuClick={() => setSidebarVisible(!sidebarVisible)} />
         <Content className="main-content">
           <Breadcrumb />
           <motion.div

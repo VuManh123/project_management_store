@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Layout, Menu } from 'antd';
 import {
@@ -19,8 +18,7 @@ import './Sidebar.css';
 
 const { Sider } = Layout;
 
-const Sidebar = () => {
-  const [collapsed, setCollapsed] = useState(false);
+const Sidebar = ({ collapsed, onCollapse }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
@@ -104,14 +102,6 @@ const Sidebar = () => {
             </motion.div>
           )}
         </AnimatePresence>
-        <motion.button
-          className="sidebar-toggle"
-          onClick={() => setCollapsed(!collapsed)}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        </motion.button>
       </div>
 
       <Menu
@@ -126,23 +116,32 @@ const Sidebar = () => {
         <Menu
           mode="inline"
           selectedKeys={location.pathname === '/profile' ? ['profile'] : []}
-          items={[
-            {
-              key: 'profile',
-              icon: <UserOutlined />,
-              label: collapsed ? '' : 'Profile',
-              onClick: () => navigate('/profile'),
-            },
-            {
-              key: 'logout',
-              icon: <LogoutOutlined />,
-              label: collapsed ? '' : 'Logout',
-              danger: true,
-              onClick: handleLogout,
-            },
-          ]}
           className="sidebar-footer-menu"
-        />
+        >
+          <Menu.Item
+            key="collapse"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => onCollapse(!collapsed)}
+            className="sidebar-collapse-item hide-on-mobile"
+          >
+            {collapsed ? '' : 'Collapse'}
+          </Menu.Item>
+          <Menu.Item
+            key="profile"
+            icon={<UserOutlined />}
+            onClick={() => navigate('/profile')}
+          >
+            {collapsed ? '' : 'Profile'}
+          </Menu.Item>
+          <Menu.Item
+            key="logout"
+            icon={<LogoutOutlined />}
+            onClick={handleLogout}
+            danger
+          >
+            {collapsed ? '' : 'Logout'}
+          </Menu.Item>
+        </Menu>
       </div>
     </Sider>
   );
