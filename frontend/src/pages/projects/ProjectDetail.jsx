@@ -16,7 +16,7 @@ import EmptyState from '../../components/common/EmptyState';
 import useProjectStore from '../../store/projectStore';
 import useTaskStore from '../../store/taskStore';
 import { usePermission } from '../../hooks/usePermission';
-import { ROLES, getProjectStatusColor } from '../../utils/constants';
+import { ROLES, getProjectStatusColor, getProjectStatusName } from '../../utils/constants';
 import dayjs from 'dayjs';
 import './ProjectDetail.css';
 
@@ -78,7 +78,7 @@ const ProjectDetail = () => {
             <div className="project-detail-header">
               <h1>{selectedProject.name}</h1>
               <Tag color={getProjectStatusColor(selectedProject.status)}>
-                {selectedProject.status?.toUpperCase()}
+                {getProjectStatusName(selectedProject.status)}
               </Tag>
             </div>
           }
@@ -99,7 +99,7 @@ const ProjectDetail = () => {
             </Descriptions.Item>
             <Descriptions.Item label="Status">
               <Tag color={getProjectStatusColor(selectedProject.status)}>
-                {selectedProject.status?.toUpperCase()}
+                {getProjectStatusName(selectedProject.status)}
               </Tag>
             </Descriptions.Item>
             <Descriptions.Item label="Created At">

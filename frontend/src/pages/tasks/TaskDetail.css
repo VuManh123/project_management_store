@@ -1,34 +1,122 @@
 .task-detail-container {
-  width: 100%;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .task-detail-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
+  margin-bottom: 24px;
 }
 
-.task-detail-header h1 {
-  margin: 0;
-  font-size: 1.5rem;
+.task-detail-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.task-detail-actions,
-.task-detail-history {
-  margin-top: 24px;
-}
-
-.task-detail-actions h3,
-.task-detail-history h3 {
+.task-detail-title {
   margin-bottom: 16px;
-  font-size: 1.2rem;
 }
 
+.task-detail-title h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.task-detail-tags {
+  margin-bottom: 24px;
+}
+
+.parent-task-card {
+  margin-top: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.parent-task-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.subtasks-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.subtask-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.subtask-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.subtask-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.subtask-card h4 {
+  margin: 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.comments-section {
+  margin-top: 16px;
+}
+
+.comment-card {
+  margin-bottom: 12px;
+  background: #fafafa;
+}
+
+.comment-card p {
+  margin: 0;
+  color: #333;
+}
+
+/* Responsive design */
 @media (max-width: 768px) {
+  .task-detail-container {
+    padding: 16px;
+  }
+
   .task-detail-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
   }
+
+  .task-detail-title h1 {
+    font-size: 24px;
+  }
+
+  .subtasks-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.task-detail-card {
+  animation: fadeIn 0.3s ease-out;
 }

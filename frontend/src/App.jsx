@@ -12,9 +12,11 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Dashboard from './pages/dashboard/Dashboard';
 import ProjectList from './pages/projects/ProjectList';
+import ProjectCreate from './pages/projects/ProjectCreate';
 import ProjectDetail from './pages/projects/ProjectDetail';
 import TaskList from './pages/tasks/TaskList';
 import TaskDetail from './pages/tasks/TaskDetail';
+import TaskForm from './pages/tasks/TaskForm';
 import SubmitReport from './pages/tasks/SubmitReport';
 import ReviewTask from './pages/tasks/ReviewTask';
 import Chat from './pages/chat/Chat';
@@ -136,9 +138,12 @@ function App() {
                 }
               >
                 <Route index element={<ProjectList />} />
+                <Route path="new" element={<ProjectCreate />} />
                 <Route path=":id" element={<ProjectDetail />} />
                 <Route path=":projectId/tasks" element={<TaskList />} />
+                <Route path=":projectId/tasks/new" element={<TaskForm />} />
                 <Route path=":projectId/tasks/:taskId" element={<TaskDetail />} />
+                <Route path=":projectId/tasks/:taskId/edit" element={<TaskForm />} />
                 <Route path=":projectId/tasks/:taskId/submit" element={<SubmitReport />} />
                 <Route path=":projectId/tasks/:taskId/review" element={<ReviewTask />} />
               </Route>

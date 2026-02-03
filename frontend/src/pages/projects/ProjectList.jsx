@@ -15,7 +15,7 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import EmptyState from '../../components/common/EmptyState';
 import { CardSkeleton } from '../../components/common/SkeletonLoader';
 import useProjectStore from '../../store/projectStore';
-import { getProjectStatusColor } from '../../utils/constants';
+import { getProjectStatusColor, getProjectStatusName } from '../../utils/constants';
 import './ProjectList.css';
 
 const { Meta } = Card;
@@ -27,18 +27,19 @@ const ProjectList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const navigate = useNavigate();
-  const { fetchProjects, projects, isLoading, createProject } = useProjectStore();
+  const { fetchProjects, projects, isLoading, pagination } = useProjectStore();
 
   useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
+    const params = {};
+    if (searchTerm) params.search = searchTerm;
+    if (filterStatus !== 'all') params.status = filterStatus;
+    params.page = pagination.page || 1;
+    params.limit = pagination.limit || 10;
+    
+    fetchProjects(params);
+  }, [searchTerm, filterStatus]);
 
-  const filteredProjects = projects.filter((project) => {
-    const matchesSearch = project.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || project.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredProjects = projects;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -160,7 +161,7 @@ const ProjectList = () => {
                     >
                       <div className="project-card-header">
                         <Tag color={getProjectStatusColor(project.status)}>
-                          {project.status?.toUpperCase() || 'ACTIVE'}
+                          {getProjectStatusName(project.status)}
                         </Tag>
                       </div>
                       <Meta
@@ -205,8 +206,8 @@ const ProjectList = () => {
                         <h3>{project.name || 'Untitled Project'}</h3>
                         <p>{project.description || 'No description'}</p>
                         <Space>
-                          <Tag color={getStatusColor(project.status)}>
-                            {project.status?.toUpperCase() || 'ACTIVE'}
+                          <Tag color={getProjectStatusColor(project.status)}>
+                            {getProjectStatusName(project.status)}
                           </Tag>
                           <span>
                             <TeamOutlined /> {project.memberCount || 0} members
