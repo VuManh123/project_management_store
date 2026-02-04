@@ -4,45 +4,24 @@ import { taskAPI } from '../services/api';
 const useTaskStore = create((set, get) => ({
   tasks: [],
   selectedTask: null,
-  filters: {
-    projectId: null,
-    status: null,
-    assigneeId: null,
-    search: '',
-  },
-  kanbanColumns: {
-    TODO: [],
-    IN_PROGRESS: [],
-    REVIEW: [],
-    DONE: [],
+  pagination: {
+    total: 0,
+    page: 1,
+    limit: 50,
+    totalPages: 0,
   },
   isLoading: false,
   error: null,
 
-  // Fetch tasks
-  fetchTasks: async (projectId = null) => {
+  // Get all tasks in a project with pagination and filters
+  fetchTasks: async (projectId, params = {}) => {
     set({ isLoading: true, error: null });
     try {
-      const projectIdToFetch = projectId || get().filters.projectId;
-      if (!projectIdToFetch) {
-        set({ isLoading: false, tasks: [] });
-        return;
-      }
-
-      const response = await taskAPI.getAll(projectIdToFetch);
-      const tasks = response.data;
-      
-      // Organize tasks into kanban columns
-      const columns = {
-        TODO: tasks.filter((t) => t.status === 'TODO'),
-        IN_PROGRESS: tasks.filter((t) => t.status === 'IN_PROGRESS'),
-        REVIEW: tasks.filter((t) => t.status === 'REVIEW'),
-        DONE: tasks.filter((t) => t.status === 'DONE'),
-      };
-
+      const response = await taskAPI.getAll(projectId, params);
+      const { tasks, pagination } = response.data?.data || response.data;
       set({
-        tasks,
-        kanbanColumns: columns,
+        tasks: tasks || [],
+        pagination: pagination || get().pagination,
         isLoading: false,
       });
     } catch (error) {
@@ -58,19 +37,27 @@ const useTaskStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await taskAPI.getById(projectId, taskId);
-      const task = response.data;
+      const task = response.data?.data || response.data;
       
       // Update in tasks list if exists
-      set((state) => ({
+      const tasks = get().tasks;
+      const taskIndex = tasks.findIndex((t) => t.id === taskId);
+      if (taskIndex !== -1) {
+        tasks[taskIndex] = task;
+      }
+
+      set({
         selectedTask: task,
-        tasks: state.tasks.map((t) => (t.id === taskId ? task : t)),
+        tasks,
         isLoading: false,
-      }));
+      });
+      return { success: true, task };
     } catch (error) {
       set({
         isLoading: false,
         error: error.response?.data?.message || 'Failed to fetch task',
       });
+      return { success: false, error: error.response?.data?.message || 'Failed to fetch task' };
     }
   },
 
@@ -79,23 +66,12 @@ const useTaskStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await taskAPI.create(projectId, data);
-      const newTask = response.data;
+      const newTask = response.data?.data || response.data;
       
-      set((state) => {
-        const updatedTasks = [...state.tasks, newTask];
-        const columns = {
-          TODO: updatedTasks.filter((t) => t.status === 'TODO'),
-          IN_PROGRESS: updatedTasks.filter((t) => t.status === 'IN_PROGRESS'),
-          REVIEW: updatedTasks.filter((t) => t.status === 'REVIEW'),
-          DONE: updatedTasks.filter((t) => t.status === 'DONE'),
-        };
-        
-        return {
-          tasks: updatedTasks,
-          kanbanColumns: columns,
-          isLoading: false,
-        };
-      });
+      set((state) => ({
+        tasks: [newTask, ...state.tasks],
+        isLoading: false,
+      }));
       
       return { success: true, task: newTask };
     } catch (error) {
@@ -112,24 +88,13 @@ const useTaskStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await taskAPI.update(projectId, taskId, data);
-      const updatedTask = response.data;
+      const updatedTask = response.data?.data || response.data;
       
-      set((state) => {
-        const updatedTasks = state.tasks.map((t) => (t.id === taskId ? updatedTask : t));
-        const columns = {
-          TODO: updatedTasks.filter((t) => t.status === 'TODO'),
-          IN_PROGRESS: updatedTasks.filter((t) => t.status === 'IN_PROGRESS'),
-          REVIEW: updatedTasks.filter((t) => t.status === 'REVIEW'),
-          DONE: updatedTasks.filter((t) => t.status === 'DONE'),
-        };
-        
-        return {
-          tasks: updatedTasks,
-          kanbanColumns: columns,
-          selectedTask: state.selectedTask?.id === taskId ? updatedTask : state.selectedTask,
-          isLoading: false,
-        };
-      });
+      set((state) => ({
+        tasks: state.tasks.map((t) => (t.id === taskId ? updatedTask : t)),
+        selectedTask: state.selectedTask?.id === taskId ? updatedTask : state.selectedTask,
+        isLoading: false,
+      }));
       
       return { success: true, task: updatedTask };
     } catch (error) {
@@ -145,26 +110,15 @@ const useTaskStore = create((set, get) => ({
   deleteTask: async (projectId, taskId) => {
     set({ isLoading: true, error: null });
     try {
-      await taskAPI.delete(projectId, taskId);
+      const response = await taskAPI.delete(projectId, taskId);
+      const result = response.data?.data || response.data;
       
-      set((state) => {
-        const updatedTasks = state.tasks.filter((t) => t.id !== taskId);
-        const columns = {
-          TODO: updatedTasks.filter((t) => t.status === 'TODO'),
-          IN_PROGRESS: updatedTasks.filter((t) => t.status === 'IN_PROGRESS'),
-          REVIEW: updatedTasks.filter((t) => t.status === 'REVIEW'),
-          DONE: updatedTasks.filter((t) => t.status === 'DONE'),
-        };
-        
-        return {
-          tasks: updatedTasks,
-          kanbanColumns: columns,
-          selectedTask: state.selectedTask?.id === taskId ? null : state.selectedTask,
-          isLoading: false,
-        };
-      });
-      
-      return { success: true };
+      set((state) => ({
+        tasks: state.tasks.filter((t) => t.id !== taskId),
+        selectedTask: state.selectedTask?.id === taskId ? null : state.selectedTask,
+        isLoading: false,
+      }));
+      return { success: true, message: result.message };
     } catch (error) {
       set({
         isLoading: false,
@@ -174,29 +128,18 @@ const useTaskStore = create((set, get) => ({
     }
   },
 
-  // Update task status
+  // Update task status (quick update)
   updateTaskStatus: async (projectId, taskId, status) => {
     set({ isLoading: true, error: null });
     try {
       const response = await taskAPI.updateStatus(projectId, taskId, status);
-      const updatedTask = response.data;
+      const updatedTask = response.data?.data || response.data;
       
-      set((state) => {
-        const updatedTasks = state.tasks.map((t) => (t.id === taskId ? updatedTask : t));
-        const columns = {
-          TODO: updatedTasks.filter((t) => t.status === 'TODO'),
-          IN_PROGRESS: updatedTasks.filter((t) => t.status === 'IN_PROGRESS'),
-          REVIEW: updatedTasks.filter((t) => t.status === 'REVIEW'),
-          DONE: updatedTasks.filter((t) => t.status === 'DONE'),
-        };
-        
-        return {
-          tasks: updatedTasks,
-          kanbanColumns: columns,
-          selectedTask: state.selectedTask?.id === taskId ? updatedTask : state.selectedTask,
-          isLoading: false,
-        };
-      });
+      set((state) => ({
+        tasks: state.tasks.map((t) => (t.id === taskId ? { ...t, status } : t)),
+        selectedTask: state.selectedTask?.id === taskId ? { ...state.selectedTask, status } : state.selectedTask,
+        isLoading: false,
+      }));
       
       return { success: true, task: updatedTask };
     } catch (error) {
@@ -208,32 +151,11 @@ const useTaskStore = create((set, get) => ({
     }
   },
 
-  // Assign task
-  assignTask: async (projectId, taskId, assigneeId) => {
-    return get().updateTask(projectId, taskId, { assigneeId });
-  },
-
-  // Set filters
-  setFilters: (filters) => {
-    set((state) => ({
-      filters: { ...state.filters, ...filters },
-    }));
-  },
-
-  // Clear filters
-  clearFilters: () => {
-    set({
-      filters: {
-        projectId: null,
-        status: null,
-        assigneeId: null,
-        search: '',
-      },
-    });
-  },
-
   // Set selected task
   setSelectedTask: (task) => set({ selectedTask: task }),
+
+  // Clear tasks (useful when switching projects)
+  clearTasks: () => set({ tasks: [], selectedTask: null, error: null }),
 
   // Clear error
   clearError: () => set({ error: null }),

@@ -1,294 +1,399 @@
 import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Row, Col, Button, Select, Input, Space, Table, Tag, Avatar, message } from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Button,
+  Input,
+  Select,
+  Tag,
+  Space,
+  Tooltip,
+  Avatar,
+  Progress,
+} from 'antd';
 import {
   PlusOutlined,
-  AppstoreOutlined,
-  UnorderedListOutlined,
   SearchOutlined,
+  UserOutlined,
+  CalendarOutlined,
+  ClockCircleOutlined,
+  BugOutlined,
+  CheckCircleOutlined,
+  SyncOutlined,
+  ExclamationCircleOutlined,
 } from '@ant-design/icons';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import TaskModal from '../../components/tasks/TaskModal';
-import KanbanBoard from '../../components/tasks/KanbanBoard';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
+import AnimatedCard from '../../components/common/AnimatedCard';
 import EmptyState from '../../components/common/EmptyState';
+import { CardSkeleton } from '../../components/common/SkeletonLoader';
 import useTaskStore from '../../store/taskStore';
-import useProjectStore from '../../store/projectStore';
-import { usePermission } from '../../hooks/usePermission';
-import { getTaskStatusColor, getPriorityColor } from '../../utils/constants';
+import { TaskStatus, TaskPriority, TaskType } from '../../utils/enums';
 import './TaskList.css';
 
 const { Search } = Input;
 const { Option } = Select;
 
 const TaskList = () => {
-  const [viewMode, setViewMode] = useState('table');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [searchParams] = useSearchParams();
-  const projectId = searchParams.get('projectId');
-  
+  const { projectId } = useParams();
   const navigate = useNavigate();
-  const { canAssignTask } = usePermission();
-  const {
-    tasks,
-    filters,
-    isLoading,
-    fetchTasks,
-    createTask,
-    updateTask,
-    deleteTask,
-    setFilters,
-  } = useTaskStore();
-  const { projects, fetchProjects } = useProjectStore();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterPriority, setFilterPriority] = useState('all');
+  const [filterType, setFilterType] = useState('all');
+
+  const { fetchTasks, tasks, isLoading, clearTasks } = useTaskStore();
 
   useEffect(() => {
-    fetchProjects();
     if (projectId) {
-      setFilters({ projectId });
-      fetchTasks(projectId);
-    }
-  }, [projectId, fetchProjects, fetchTasks, setFilters]);
+      const params = {};
+      if (searchTerm) params.search = searchTerm;
+      if (filterStatus !== 'all') params.status = filterStatus;
+      if (filterPriority !== 'all') params.priority = filterPriority;
+      if (filterType !== 'all') params.type = filterType;
 
-  const handleCreateTask = async (values) => {
-    if (!projectId) {
-      message.error('Please select a project first');
-      return;
-    }
-
-    const result = await createTask(projectId, values);
-    if (result.success) {
-      message.success('Task created successfully');
-      setModalOpen(false);
+      fetchTasks(projectId, params);
     } else {
-      message.error(result.error || 'Failed to create task');
+      // If no projectId, show message or redirect
+      console.warn('TaskList: No projectId provided. Cannot fetch tasks.');
+    }
+
+    return () => clearTasks();
+  }, [projectId, searchTerm, filterStatus, filterPriority, filterType]);
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case TaskStatus.TODO:
+        return <ClockCircleOutlined />;
+      case TaskStatus.IN_PROGRESS:
+        return <SyncOutlined spin />;
+      case TaskStatus.REVIEW:
+        return <ExclamationCircleOutlined />;
+      case TaskStatus.DONE:
+        return <CheckCircleOutlined />;
+      case TaskStatus.REJECT:
+        return <ExclamationCircleOutlined />;
+      default:
+        return <ClockCircleOutlined />;
     }
   };
 
-  const handleUpdateTask = async (values) => {
-    if (!projectId || !selectedTask) return;
-
-    const result = await updateTask(projectId, selectedTask.id, values);
-    if (result.success) {
-      message.success('Task updated successfully');
-      setModalOpen(false);
-      setSelectedTask(null);
-    } else {
-      message.error(result.error || 'Failed to update task');
+  const getStatusColor = (status) => {
+    switch (status) {
+      case TaskStatus.TODO:
+        return 'default';
+      case TaskStatus.IN_PROGRESS:
+        return 'processing';
+      case TaskStatus.REVIEW:
+        return 'warning';
+      case TaskStatus.DONE:
+        return 'success';
+      case TaskStatus.REJECT:
+        return 'error';
+      default:
+        return 'default';
     }
   };
 
-  const handleEdit = (task) => {
-    setSelectedTask(task);
-    setModalOpen(true);
-  };
-
-  const handleDelete = async (taskId) => {
-    if (!projectId) return;
-    const result = await deleteTask(projectId, taskId);
-    if (result.success) {
-      message.success('Task deleted successfully');
-    } else {
-      message.error(result.error || 'Failed to delete task');
+  const getStatusName = (status) => {
+    switch (status) {
+      case TaskStatus.TODO:
+        return 'TODO';
+      case TaskStatus.IN_PROGRESS:
+        return 'IN PROGRESS';
+      case TaskStatus.REVIEW:
+        return 'REVIEW';
+      case TaskStatus.DONE:
+        return 'DONE';
+      case TaskStatus.REJECT:
+        return 'REJECTED';
+      default:
+        return 'UNKNOWN';
     }
   };
 
-  const columns = [
-    {
-      title: 'Title',
-      dataIndex: 'title',
-      key: 'title',
-      render: (text, record) => (
-        <a onClick={() => navigate(`/projects/${projectId}/tasks/${record.id}`)}>
-          {text}
-        </a>
-      ),
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => {
-        return <Tag color={getTaskStatusColor(status)}>{status?.replace('_', ' ')}</Tag>;
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case TaskPriority.LOW:
+        return 'blue';
+      case TaskPriority.MEDIUM:
+        return 'orange';
+      case TaskPriority.HIGH:
+        return 'red';
+      case TaskPriority.CRITICAL:
+        return 'purple';
+      default:
+        return 'default';
+    }
+  };
+
+  const getPriorityName = (priority) => {
+    switch (priority) {
+      case TaskPriority.LOW:
+        return 'LOW';
+      case TaskPriority.MEDIUM:
+        return 'MEDIUM';
+      case TaskPriority.HIGH:
+        return 'HIGH';
+      case TaskPriority.CRITICAL:
+        return 'CRITICAL';
+      default:
+        return 'UNKNOWN';
+    }
+  };
+
+  const getTypeIcon = (type) => {
+    switch (type) {
+      case TaskType.BUG:
+        return <BugOutlined />;
+      case TaskType.TASK:
+        return <CheckCircleOutlined />;
+      case TaskType.STORY:
+        return <UserOutlined />;
+      case TaskType.EPIC:
+        return <CalendarOutlined />;
+      default:
+        return <CheckCircleOutlined />;
+    }
+  };
+
+  const getTypeName = (type) => {
+    switch (type) {
+      case TaskType.TASK:
+        return 'TASK';
+      case TaskType.BUG:
+        return 'BUG';
+      case TaskType.STORY:
+        return 'STORY';
+      case TaskType.EPIC:
+        return 'EPIC';
+      default:
+        return 'UNKNOWN';
+    }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
       },
     },
-    {
-      title: 'Priority',
-      dataIndex: 'priority',
-      key: 'priority',
-      render: (priority) => {
-        return <Tag color={getPriorityColor(priority)}>{priority}</Tag>;
-      },
-    },
-    {
-      title: 'Assignee',
-      dataIndex: 'assignee',
-      key: 'assignee',
-      render: (assignee) =>
-        assignee ? (
-          <Avatar size="small" src={assignee.avatar} icon={<SearchOutlined />} />
-        ) : (
-          '-'
-        ),
-    },
-    {
-      title: 'Progress',
-      dataIndex: 'progress',
-      key: 'progress',
-      render: (progress) => `${progress || 0}%`,
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (_, record) => (
-        <Space>
-          <Button type="link" size="small" onClick={() => handleEdit(record)}>
-            Edit
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            danger
-            onClick={() => handleDelete(record.id)}
-          >
-            Delete
-          </Button>
-        </Space>
-      ),
-    },
-  ];
+  };
 
-  const filteredTasks = tasks.filter((task) => {
-    if (filters.status && task.status !== filters.status) return false;
-    if (filters.search && !task.title?.toLowerCase().includes(filters.search.toLowerCase())) {
-      return false;
-    }
-    return true;
-  });
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
 
-  if (isLoading && tasks.length === 0) {
-    return <LoadingSpinner />;
+  if (isLoading) {
+    return (
+      <div className="task-list-container">
+        <div className="task-list-header">
+          <h1 className="task-list-title">Tasks</h1>
+        </div>
+        <Row gutter={[16, 16]}>
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Col xs={24} sm={12} lg={8} key={i}>
+              <CardSkeleton />
+            </Col>
+          ))}
+        </Row>
+      </div>
+    );
   }
 
   return (
     <div className="task-list-container">
       <div className="task-list-header">
         <h1 className="task-list-title">Tasks</h1>
-        <Space>
-          <Select
-            value={filters.projectId || undefined}
-            placeholder="Select Project"
-            style={{ width: 200 }}
-            onChange={(value) => {
-              setFilters({ projectId: value });
-              fetchTasks(value);
-            }}
-          >
-            {projects.map((project) => (
-              <Option key={project.id} value={project.id}>
-                {project.name}
-              </Option>
-            ))}
-          </Select>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setSelectedTask(null);
-              setModalOpen(true);
-            }}
-            disabled={!projectId}
-          >
-            Create Task
-          </Button>
-        </Space>
+        {projectId && (
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              size="large"
+              onClick={() => navigate(`/projects/${projectId}/tasks/new`)}
+              className="create-task-button"
+            >
+              Create Task
+            </Button>
+          </motion.div>
+        )}
       </div>
 
-      <div className="task-list-filters">
-        <Space wrap>
+      {!projectId && (
+        <Card style={{ marginBottom: 24 }}>
+          <EmptyState description="Please select a project to view and manage tasks">
+            <Button type="primary" onClick={() => navigate('/projects')}>
+              Go to Projects
+            </Button>
+          </EmptyState>
+        </Card>
+      )}
+
+      {/* Filters */}
+      <motion.div
+        className="task-list-filters"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Space size="middle" wrap>
           <Search
             placeholder="Search tasks..."
             allowClear
+            prefix={<SearchOutlined />}
             style={{ width: 300 }}
-            value={filters.search}
-            onChange={(e) => setFilters({ search: e.target.value })}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
           <Select
-            value={filters.status || undefined}
-            placeholder="Filter by Status"
-            allowClear
+            value={filterStatus}
+            onChange={setFilterStatus}
             style={{ width: 150 }}
-            onChange={(value) => setFilters({ status: value })}
+            placeholder="Status"
           >
-            <Option value="TODO">To Do</Option>
-            <Option value="IN_PROGRESS">In Progress</Option>
-            <Option value="REVIEW">Review</Option>
-            <Option value="DONE">Done</Option>
+            <Option value="all">All Status</Option>
+            <Option value={TaskStatus.TODO}>TODO</Option>
+            <Option value={TaskStatus.IN_PROGRESS}>In Progress</Option>
+            <Option value={TaskStatus.REVIEW}>Review</Option>
+            <Option value={TaskStatus.DONE}>Done</Option>
+            <Option value={TaskStatus.REJECT}>Rejected</Option>
           </Select>
-          <Space>
-            <Button
-              type={viewMode === 'table' ? 'primary' : 'default'}
-              icon={<UnorderedListOutlined />}
-              onClick={() => setViewMode('table')}
-            >
-              Table
-            </Button>
-            <Button
-              type={viewMode === 'kanban' ? 'primary' : 'default'}
-              icon={<AppstoreOutlined />}
-              onClick={() => setViewMode('kanban')}
-            >
-              Kanban
-            </Button>
-          </Space>
-        </Space>
-      </div>
-
-      {!projectId ? (
-        <EmptyState description="Please select a project to view tasks">
-          <Button type="primary" onClick={() => navigate('/projects')}>
-            Go to Projects
-          </Button>
-        </EmptyState>
-      ) : filteredTasks.length === 0 ? (
-        <EmptyState description="No tasks found">
-          <Button
-            type="primary"
-            onClick={() => {
-              setSelectedTask(null);
-              setModalOpen(true);
-            }}
+          <Select
+            value={filterPriority}
+            onChange={setFilterPriority}
+            style={{ width: 150 }}
+            placeholder="Priority"
           >
-            Create Your First Task
-          </Button>
-        </EmptyState>
-      ) : viewMode === 'table' ? (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Table
-            columns={columns}
-            dataSource={filteredTasks}
-            rowKey="id"
-            pagination={{ pageSize: 10 }}
-          />
-        </motion.div>
-      ) : (
-        <KanbanBoard tasks={filteredTasks} projectId={projectId} />
-      )}
+            <Option value="all">All Priority</Option>
+            <Option value={TaskPriority.LOW}>Low</Option>
+            <Option value={TaskPriority.MEDIUM}>Medium</Option>
+            <Option value={TaskPriority.HIGH}>High</Option>
+            <Option value={TaskPriority.CRITICAL}>Critical</Option>
+          </Select>
+          <Select
+            value={filterType}
+            onChange={setFilterType}
+            style={{ width: 150 }}
+            placeholder="Type"
+          >
+            <Option value="all">All Type</Option>
+            <Option value={TaskType.TASK}>Task</Option>
+            <Option value={TaskType.BUG}>Bug</Option>
+            <Option value={TaskType.STORY}>Story</Option>
+            <Option value={TaskType.EPIC}>Epic</Option>
+          </Select>
+        </Space>
+      </motion.div>
 
-      <TaskModal
-        open={modalOpen}
-        onCancel={() => {
-          setModalOpen(false);
-          setSelectedTask(null);
-        }}
-        onOk={selectedTask ? handleUpdateTask : handleCreateTask}
-        task={selectedTask}
-        projectId={projectId}
-      />
+      {/* Tasks Grid */}
+      {tasks.length === 0 ? (
+        <EmptyState description="No tasks found">
+          {projectId && (
+            <Button
+              type="primary"
+              onClick={() => navigate(`/projects/${projectId}/tasks/new`)}
+            >
+              Create Your First Task
+            </Button>
+          )}
+        </EmptyState>
+      ) : (
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <Row gutter={[16, 16]}>
+            {tasks.map((task) => (
+              <Col xs={24} sm={12} lg={8} key={task.id}>
+                <motion.div variants={itemVariants}>
+                  <AnimatedCard
+                    hover
+                    className="task-card"
+                    onClick={() =>
+                      navigate(`/projects/${projectId}/tasks/${task.id}`)
+                    }
+                  >
+                    <div className="task-card-header">
+                      <Space>
+                        <Tag
+                          icon={getTypeIcon(task.type)}
+                          color={task.type === TaskType.BUG ? 'red' : 'blue'}
+                        >
+                          {getTypeName(task.type)}
+                        </Tag>
+                        <Tag
+                          icon={getStatusIcon(task.status)}
+                          color={getStatusColor(task.status)}
+                        >
+                          {getStatusName(task.status)}
+                        </Tag>
+                      </Space>
+                      <Tag color={getPriorityColor(task.priority)}>
+                        {getPriorityName(task.priority)}
+                      </Tag>
+                    </div>
+
+                    <h3 className="task-title">{task.title}</h3>
+                    <p className="task-description">
+                      {task.description || 'No description'}
+                    </p>
+
+                    <div className="task-progress">
+                      <span>Progress</span>
+                      <Progress
+                        percent={task.progress || 0}
+                        size="small"
+                        status={
+                          task.status === TaskStatus.DONE
+                            ? 'success'
+                            : 'active'
+                        }
+                      />
+                    </div>
+
+                    <div className="task-card-footer">
+                      <Space>
+                        {task.assignedTo ? (
+                          <Tooltip title={task.assignedTo.name}>
+                            <Avatar
+                              size="small"
+                              src={task.assignedTo.avatar}
+                              icon={<UserOutlined />}
+                            />
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title="Unassigned">
+                            <Avatar size="small" icon={<UserOutlined />} />
+                          </Tooltip>
+                        )}
+                        {task.due_date && (
+                          <Tooltip title="Due date">
+                            <Space size={4}>
+                              <CalendarOutlined />
+                              <span className="task-due-date">
+                                {new Date(task.due_date).toLocaleDateString()}
+                              </span>
+                            </Space>
+                          </Tooltip>
+                        )}
+                      </Space>
+                      {task.subtasks && task.subtasks.length > 0 && (
+                        <Tag>{task.subtasks.length} subtasks</Tag>
+                      )}
+                    </div>
+                  </AnimatedCard>
+                </motion.div>
+              </Col>
+            ))}
+          </Row>
+        </motion.div>
+      )}
     </div>
   );
 };

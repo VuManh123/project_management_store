@@ -72,6 +72,52 @@ class WithLocale
         return this
     }
 
+    isUUID() {
+        this.withLocale = this.withLocale.isUUID().withMessage(stringUtils.capitalize(this.field) + " must be a valid UUID").bail();
+        return this;
+    }
+
+    isInt(options = {}) {
+        this.withLocale = this.withLocale.isInt(options).withMessage(stringUtils.capitalize(this.field) + " must be an integer").bail();
+        return this;
+    }
+
+    isDate() {
+        this.withLocale = this.withLocale.isDate().withMessage(stringUtils.capitalize(this.field) + " must be a valid date").bail();
+        return this;
+    }
+
+    isArray() {
+        this.withLocale = this.withLocale.isArray().withMessage(stringUtils.capitalize(this.field) + " must be an array").bail();
+        return this;
+    }
+
+    optional() {
+        this.withLocale = this.withLocale.optional();
+        return this;
+    }
+
+    custom(callback) {
+        this.withLocale = this.withLocale.custom(callback);
+        return this;
+    }
+
+    exists(sequelizeModel, field) {
+        this.withLocale = this.withLocale.custom(async (value) => {
+            const recordExist = await sequelizeModel.findOne({
+                where: {
+                    [field]: value
+                }
+            });
+
+            if (!recordExist) {
+                throw new Error(stringUtils.capitalize(this.field) + " does not exist");
+            }
+        }).bail();
+
+        return this;
+    }
+
     get() {
         return this.withLocale
     }

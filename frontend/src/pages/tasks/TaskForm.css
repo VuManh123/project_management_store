@@ -1,0 +1,90 @@
+.task-form-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.task-form-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+.task-form-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.task-form-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.task-form-header h2 {
+  margin-bottom: 8px;
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.task-form-subtitle {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+}
+
+.submit-button {
+  min-width: 160px;
+}
+
+/* Form styles */
+.ant-form-item-label > label {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.ant-input-textarea {
+  border-radius: 8px;
+}
+
+.ant-select,
+.ant-picker,
+.ant-input-number {
+  border-radius: 8px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .task-form-container {
+    padding: 16px;
+  }
+
+  .task-form-header h2 {
+    font-size: 24px;
+  }
+
+  .task-form-subtitle {
+    font-size: 14px;
+  }
+
+  .submit-button {
+    width: 100%;
+  }
+}
+
+/* Animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.task-form-card {
+  animation: slideIn 0.3s ease-out;
+}

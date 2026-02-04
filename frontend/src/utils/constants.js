@@ -1,3 +1,17 @@
+import {
+  ProjectStatus,
+  ProjectStatusNames,
+  ProjectMemberRole,
+  ProjectMemberRoleNames,
+  TaskStatus,
+  TaskStatusNames,
+  TaskPriority,
+  TaskPriorityNames,
+  TaskType,
+  TaskTypeNames,
+  getEnumName,
+} from './enums';
+
 // API Configuration
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 
@@ -13,54 +27,100 @@ export const ROUTES = {
   NOT_FOUND: '/404',
 };
 
-// User Roles
+// Re-export enums for backward compatibility
+export { ProjectStatus, TaskStatus, TaskPriority, TaskType };
+
+// User Roles (keep for backward compatibility)
 export const ROLES = {
   PM: 'PM',
   LEADER: 'LEADER',
   MEMBER: 'MEMBER',
 };
 
-// Task Status
-export const TASK_STATUS = {
-  TODO: 'TODO',
-  IN_PROGRESS: 'IN_PROGRESS',
-  REVIEW: 'REVIEW',
-  DONE: 'DONE',
+// ============================================================================
+// COLOR MAPPINGS FOR UI
+// ============================================================================
+
+// Task Status Colors
+export const getTaskStatusColor = (status) => {
+  const colorMap = {
+    [TaskStatus.TODO]: 'default',
+    [TaskStatus.IN_PROGRESS]: 'processing',
+    [TaskStatus.REVIEW]: 'warning',
+    [TaskStatus.DONE]: 'success',
+    [TaskStatus.REJECT]: 'error',
+  };
+  return colorMap[status] || 'default';
 };
 
-// Task Status Colors (Design System)
-export const getTaskStatusColor = (status) => {
-  const colors = {
-    TODO: 'default', // #CBD5E1
-    IN_PROGRESS: 'processing', // #3B82F6
-    REVIEW: 'warning', // #F59E0B
-    DONE: 'success', // #22C55E
-    REJECT: 'error', // #EF4444
-  };
-  return colors[status] || 'default';
+// Task Status Name
+export const getTaskStatusName = (status) => {
+  return getEnumName(status, TaskStatusNames);
 };
 
 // Project Status Colors
 export const getProjectStatusColor = (status) => {
-  const colors = {
-    active: 'success', // #22C55E
-    completed: 'processing', // #3B82F6
-    on_hold: 'warning', // #F59E0B
-    cancelled: 'error', // #EF4444
+  const colorMap = {
+    [ProjectStatus.ACTIVE]: 'success',
+    [ProjectStatus.ARCHIVED]: 'default',
   };
-  return colors[status] || 'default';
+  return colorMap[status] || 'default';
 };
 
-// Priority Colors
-export const getPriorityColor = (priority) => {
-  const colors = {
-    low: 'default',
-    medium: 'processing', // Blue
-    high: 'warning', // Orange
-    urgent: 'error', // Red
-  };
-  return colors[priority] || 'default';
+// Project Status Name
+export const getProjectStatusName = (status) => {
+  return getEnumName(status, ProjectStatusNames);
 };
+
+// Task Priority Colors
+export const getTaskPriorityColor = (priority) => {
+  const colorMap = {
+    [TaskPriority.LOW]: 'default',
+    [TaskPriority.MEDIUM]: 'processing',
+    [TaskPriority.HIGH]: 'warning',
+    [TaskPriority.CRITICAL]: 'error',
+  };
+  return colorMap[priority] || 'default';
+};
+
+// Task Priority Name
+export const getTaskPriorityName = (priority) => {
+  return getEnumName(priority, TaskPriorityNames);
+};
+
+// Task Type Colors
+export const getTaskTypeColor = (type) => {
+  const colorMap = {
+    [TaskType.TASK]: 'blue',
+    [TaskType.BUG]: 'red',
+    [TaskType.STORY]: 'green',
+    [TaskType.EPIC]: 'purple',
+  };
+  return colorMap[type] || 'default';
+};
+
+// Task Type Name
+export const getTaskTypeName = (type) => {
+  return getEnumName(type, TaskTypeNames);
+};
+
+// Project Member Role Colors
+export const getProjectMemberRoleColor = (role) => {
+  const colorMap = {
+    [ProjectMemberRole.PM]: 'gold',
+    [ProjectMemberRole.LEADER]: 'blue',
+    [ProjectMemberRole.MEMBER]: 'default',
+  };
+  return colorMap[role] || 'default';
+};
+
+// Project Member Role Name
+export const getProjectMemberRoleName = (role) => {
+  return getEnumName(role, ProjectMemberRoleNames);
+};
+
+// Backward compatibility
+export const getPriorityColor = getTaskPriorityColor;
 
 // Animation Variants
 export const ANIMATION_VARIANTS = {

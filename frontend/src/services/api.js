@@ -84,19 +84,20 @@ export const authAPI = {
 };
 
 export const projectAPI = {
-  getAll: () => api.get('/projects'),
+  // Get all projects with pagination and filters
+  getAll: (params) => api.get('/projects', { params }), // params: { page, limit, status, search }
   getById: (id) => api.get(`/projects/${id}`),
   create: (data) => api.post('/projects', data),
   update: (id, data) => api.put(`/projects/${id}`, data),
   delete: (id) => api.delete(`/projects/${id}`),
-  getMembers: (id) => api.get(`/projects/${id}/members`),
-  addMember: (id, memberData) => api.post(`/projects/${id}/members`, memberData),
-  removeMember: (id, memberId) => api.delete(`/projects/${id}/members/${memberId}`),
-  updateMemberRole: (id, memberId, data) => api.patch(`/projects/${id}/members/${memberId}`, data),
+  // Member management
+  addMember: (projectId, memberData) => api.post(`/projects/${projectId}/members`, memberData),
+  removeMember: (projectId, memberId) => api.delete(`/projects/${projectId}/members/${memberId}`),
+  updateMemberRole: (projectId, memberId, data) => api.put(`/projects/${projectId}/members/${memberId}/role`, data),
 };
 
 export const taskAPI = {
-  getAll: (projectId) => api.get(`/projects/${projectId}/tasks`),
+  getAll: (projectId, params) => api.get(`/projects/${projectId}/tasks`, { params }),
   getById: (projectId, taskId) => api.get(`/projects/${projectId}/tasks/${taskId}`),
   create: (projectId, data) => api.post(`/projects/${projectId}/tasks`, data),
   update: (projectId, taskId, data) => api.put(`/projects/${projectId}/tasks/${taskId}`, data),
