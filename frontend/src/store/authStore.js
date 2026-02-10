@@ -5,6 +5,7 @@ const useAuthStore = create((set, get) => ({
       user: null,
       token: null,
       isAuthenticated: false,
+      isInitialized: false,
       isLoading: false,
       error: null,
 
@@ -202,9 +203,14 @@ const useAuthStore = create((set, get) => ({
           set({
             token,
             isAuthenticated: true,
+            isInitialized: true,
           });
           // Optionally fetch user profile
           get().getProfile();
+        } else {
+          set({
+            isInitialized: true,
+          });
         }
       },
 

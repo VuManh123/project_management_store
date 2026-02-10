@@ -2,11 +2,14 @@ import { motion } from 'framer-motion';
 import { Breadcrumb as AntBreadcrumb } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
 import { useLocation, Link } from 'react-router-dom';
+import useProjectStore from '../../store/projectStore';
 import './Breadcrumb.css';
 
 const Breadcrumb = () => {
   const location = useLocation();
   const pathSnippets = location.pathname.split('/').filter((i) => i);
+
+  const { selectedProject, projects } = useProjectStore();
 
   const breadcrumbNameMap = {
     dashboard: 'Dashboard',
@@ -18,9 +21,25 @@ const Breadcrumb = () => {
     register: 'Register',
   };
 
+  const resolveProjectName = (projectId) => {
+    if (!projectId) return projectId;
+
+    if (selectedProject?.id === projectId) {
+      return selectedProject.name || projectId;
+    }
+
+    const fromList = projects.find((p) => p.id === projectId);
+    return fromList?.name || projectId;
+  };
+
   const extraBreadcrumbItems = pathSnippets.map((_, index) => {
     const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
-    const name = breadcrumbNameMap[pathSnippets[index]] || pathSnippets[index];
+    let name = breadcrumbNameMap[pathSnippets[index]] || pathSnippets[index];
+
+    // If path is /projects/:id or deeper, replace :id with project name
+    if (pathSnippets[0] === 'projects' && index === 1) {
+      name = resolveProjectName(pathSnippets[1]);
+    }
     
     const isLast = index === pathSnippets.length - 1;
     
