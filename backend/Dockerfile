@@ -16,7 +16,7 @@ COPY package.json package-lock.json* ./
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
 # ---------------------------------------------
-# Stage 2: Dev dependencies (for dev profile only)
+# Stage 2: Dev dependencies (for development profile)
 # ---------------------------------------------
 FROM node:20-alpine AS dev-dependencies
 
@@ -27,7 +27,23 @@ COPY package.json package-lock.json* ./
 RUN npm ci --ignore-scripts && npm cache clean --force
 
 # ---------------------------------------------
-# Stage 3: Production
+# Stage 3: Development (APP_ENV=development)
+# ---------------------------------------------
+FROM node:20-alpine AS development
+
+WORKDIR /app
+
+COPY --from=dev-dependencies /app/node_modules ./node_modules
+COPY package.json package-lock.json* ./
+COPY . .
+
+EXPOSE 3000
+
+# Đảm bảo dev deps có trong volume (kể cả khi volume trước đó là từ production)
+CMD ["sh", "-c", "npm install && npm run dev"]
+
+# ---------------------------------------------
+# Stage 4: Production (APP_ENV=production)
 # ---------------------------------------------
 FROM node:20-alpine AS production
 

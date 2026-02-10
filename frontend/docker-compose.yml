@@ -1,29 +1,43 @@
-# Docker Compose - Frontend only (React + Nginx)
-# Mọi cấu hình build/run frontend nằm trong thư mục frontend/.
-# Chạy từ repo root: docker-compose -f frontend/docker-compose.yml up -d
-# Build với API URL: VITE_API_BASE_URL=https://api.example.com/api docker-compose -f frontend/docker-compose.yml up -d --build
+# Docker Compose - Frontend (React + Vite)
+# Một file duy nhất: đặt APP_ENV trong .env (production | development).
+# - APP_ENV=production (mặc định): build Vite, serve Nginx (port 80)
+# - APP_ENV=development: Vite dev server + mount code → hot reload (port 5173)
+# Chạy: docker compose -f frontend/docker-compose.yml up -d --build
 
 services:
   frontend-pms:
     build:
       context: .
       dockerfile: Dockerfile
-      target: production
+      target: ${APP_ENV:-production}
       args:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:3000/api}
+        APP_ENV: ${APP_ENV:-production}
     image: frontend-pms:latest
     container_name: frontend-pms
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-80}:80"
+      - "5173:5173"
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:3000/api}
+    volumes:
+      # Dev: mount code + giữ node_modules từ image; Prod: Nginx không dùng /app
+      - .:/app
+      - frontend_node_modules:/app/node_modules
     networks:
       - pm-network
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80"]
+      # Prod listen 80, dev listen 5173 — kiểm tra cả hai
+      test: ["CMD", "sh", "-c", "wget -q --spider http://localhost:80 || wget -q --spider http://localhost:5173 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 15s
+
+volumes:
+  frontend_node_modules:
 
 networks:
   pm-network:

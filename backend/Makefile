@@ -1,11 +1,18 @@
 # Backend - chạy từ thư mục backend/
-# make dev      - Chạy môi trường development (hot reload, port 3000)
-# make dev-down - Dừng
+# make dev   - APP_ENV=development (hot reload)
+# make up    - Theo APP_ENV trong .env (mặc định production)
+# make down  - Dừng
 
-.PHONY: dev dev-down
+.PHONY: dev dev-down up down
 
 dev:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+	APP_ENV=development docker compose -f docker-compose.yml up -d --build
 
 dev-down:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml down
+	docker compose -f docker-compose.yml down
+
+up:
+	docker compose -f docker-compose.yml up -d --build
+
+down:
+	docker compose -f docker-compose.yml down

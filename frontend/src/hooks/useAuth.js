@@ -1,12 +1,7 @@
-import { useEffect } from 'react';
 import useAuthStore from '../store/authStore';
 
 export const useAuth = () => {
-  const { isAuthenticated, initAuth, user } = useAuthStore();
-
-  useEffect(() => {
-    initAuth();
-  }, [initAuth]);
+  const { isAuthenticated, isInitialized, user } = useAuthStore();
 
   const hasRole = (role) => {
     return user?.role === role;
@@ -18,6 +13,7 @@ export const useAuth = () => {
 
   return {
     isAuthenticated,
+    isInitialized,
     user,
     hasRole,
     hasAnyRole,

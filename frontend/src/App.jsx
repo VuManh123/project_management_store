@@ -29,8 +29,13 @@ import './App.css';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isInitialized } = useAuth();
   
+  // Wait until auth state is initialized to avoid wrong redirects on reload
+  if (!isInitialized) {
+    return null;
+  }
+
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
@@ -40,8 +45,12 @@ const ProtectedRoute = ({ children }) => {
 
 // Public Route Component (redirect if authenticated)
 const PublicRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isInitialized } = useAuth();
   
+  if (!isInitialized) {
+    return null;
+  }
+
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -51,8 +60,12 @@ const PublicRoute = ({ children }) => {
 
 // Landing Route Component (show landing page if not authenticated, redirect if authenticated)
 const LandingRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isInitialized } = useAuth();
   
+  if (!isInitialized) {
+    return null;
+  }
+
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }

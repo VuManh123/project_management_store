@@ -1,7 +1,8 @@
-# Docker Compose - Backend stack (MySQL, phpMyAdmin, API)
-# Mọi cấu hình build/run backend nằm trong thư mục backend/.
-# Chạy từ repo root: docker-compose -f backend/docker-compose.yml up -d
-# Build:  docker-compose -f backend/docker-compose.yml up -d --build
+# Docker Compose - Backend (MySQL, phpMyAdmin, API)
+# Một file duy nhất: đặt APP_ENV trong .env (production | development).
+# - APP_ENV=production (mặc định): build tối ưu, chạy node server.js
+# - APP_ENV=development: build stage dev, mount code → hot reload
+# Chạy: docker compose -f backend/docker-compose.yml up -d --build
 
 services:
   mysql:
@@ -53,7 +54,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: production
+      target: ${APP_ENV:-production}
     image: backend-pms:latest
     container_name: backend-pms
     restart: unless-stopped
@@ -62,7 +63,8 @@ services:
     env_file:
       - ./.env
     environment:
-      NODE_ENV: production
+      APP_ENV: ${APP_ENV:-production}
+      NODE_ENV: ${APP_ENV:-production}
       DATABASE_ENV: ${DATABASE_ENV:-development}
       DATABASE_HOST: mysql
       DATABASE_PORT: 3306
@@ -74,6 +76,10 @@ services:
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+    volumes:
+      # Mount code; node_modules giữ từ image (prod hoặc dev tùy APP_ENV)
+      - .:/app
+      - backend_node_modules:/app/node_modules
     depends_on:
       mysql:
         condition: service_healthy
@@ -89,6 +95,7 @@ services:
 volumes:
   mysql_data:
     driver: local
+  backend_node_modules:
 
 networks:
   pm-network:
